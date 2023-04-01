@@ -1,0 +1,17 @@
+{
+  "name": "securepeerjs",
+  "version": "1.0.0",
+  "description": "PeerJS extension with encrypted hybrid handshake",
+  "main": "out/index.js",
+  "types": "out/index.d.ts",
+  "scripts": {
+    "build": "tsc",
+    "test": "jest"
+  },
+  "author": "bosskabouter",
+  "license": "ISC",
+  "dependencies": {
+    "peerjs": "^1.4.7",
+    "securepeerkey": "file:../securepeerkey"
+  }
+}
