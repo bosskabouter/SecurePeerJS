@@ -1,6 +1,7 @@
 {
   "name": "securepeerkey",
   "version": "1.0.0",
+  "main": "index.js",
   "description": "Key for secure hybrid handshake in SecurePeer",
   "keywords": [
     "SecurePeer",

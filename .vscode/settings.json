@@ -12,6 +12,7 @@
     "securepeer",
     "securepeerjs",
     "securepeerkey",
+    "securepeerserver",
     "theserverkey",
     "xchacha"
   ]

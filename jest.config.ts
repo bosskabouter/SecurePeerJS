@@ -24,7 +24,7 @@ const conf: JestConfigWithTsJest = {
       preset: 'ts-jest/presets/default-esm',
       displayName: 'securepeer',
       testEnvironment: 'node',
-      testMatch: ['<rootDir>/packages/securepeer/**/**.(spec|test).ts?(x)'],
+      testMatch: ['<rootDir>/packages/securepeerserver/**/**.(spec|test).ts?(x)'],
       detectLeaks: false,
       detectOpenHandles: true
 

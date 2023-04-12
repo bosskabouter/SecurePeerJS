@@ -2,8 +2,14 @@
   "name": "securepeer-js",
   "version": "1.0.0",
   "description": "Extended Peers with hybrid security",
+
+
   "homepage": "https://github.com/bosskabouter/SecurePeerJS",
   "bugs": "https://github.com/bosskabouter/SecurePeerJS/issues",
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/bosskabouter/SecurePeerJS.git"
+  },
   "contributors": [
     "paul.kuit@protonmail.com"
   ],
@@ -27,9 +33,12 @@
     "sign",
     "identity",
     "authentic",
-    "verification"
+    "verification",
+    "bip32",
+    "bip39",
+    "mnemonic"
   ],
-  "author": "bosskabouter",
+  "author": "Paul Kuit",
   "license": "ISC",
   "workspaces": [
     "packages/*",

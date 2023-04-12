@@ -1,6 +1,7 @@
 {
   "name": "securepeerkey-bip",
   "version": "1.0.0",
+  "main": "index.js",
   "description": "BIP key for SecurePeerJS",
   "keywords": [
     "bip32",
@@ -8,6 +9,10 @@
     "SecurePeerJS"
   ],
   "homepage": "https://github.com/bosskabouter/SecurePeerJS/tree/master/packages/securepeer-bip",
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/bosskabouter/SecurePeerJS.git"
+  },
   "scripts": {
     "build": "tsc",
     "test": "jest"

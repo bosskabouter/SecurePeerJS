@@ -1,8 +1,13 @@
 {
   "name": "securepeerjs",
   "version": "1.0.0",
+  "main": "index.js",
   "description": "PeerJS extension with encrypted hybrid handshake",
   "homepage": "https://github.com/bosskabouter/SecurePeerJS/tree/master/packages/securepeerjs",
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/bosskabouter/SecurePeerJS.git"
+  },
   "scripts": {
     "build": "tsc",
     "test": "jest"
