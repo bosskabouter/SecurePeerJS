@@ -1,12 +1,12 @@
-# SecurePeerKey - Peer with encryption
+# SecurePeerKey - 
 
 SecurePeer is a library that adds a layer of hybrid security to [Peers](https://github.com/peers), a popular library for peer-to-peer communication. SecurePeer uses [libsodium](https://github.com/jedisct1/libsodium.js) for encryption and signature verification to ensure secure communication between peers. It also offers an optional server implementation for identity verification.
 
-## Install SecurePeerJS
+## Install SecurePeerKey
 
 ``` bash
 
-    npm i securepeerjs
+    npm i securepeerkey
 ```
 
 ## Usage
