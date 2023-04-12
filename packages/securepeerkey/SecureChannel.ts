@@ -1,5 +1,13 @@
 import sodium from 'libsodium-wrappers'
-import { type EncryptedMessage } from './'
+
+/**
+ * Every encrypted messages send contains a new nonce
+ */
+export interface EncryptedMessage {
+  nonce: string
+  cipher: string
+}
+
 /**
  * Once a shared secret has been established in between two participants during handshake, a secure channel is able to encrypt and decrypt messages using this shared common secret
  */

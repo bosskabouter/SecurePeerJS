@@ -1,12 +1,12 @@
 # SecurePeer - Encrypted P2P
 
-SecurePeer add a layer of hybrid encryption and signature verification to [Peers](https://github.com/peers), a popular library for peer-to-peer communication.
+SecurePeer adds a layer of hybrid encryption and signature verification to [Peers](https://github.com/peers), a popular library for peer-to-peer communication.
 
 ## Contents
 
 ### 1. [SecurePeerKey](./packages/securepeerkey)
 
-Asymmetric Encryption and Signing keys for SecureLayer over SecureChannel communication. _No installation needed, already included in server and client libraries._
+Asymmetric Encryption and Signing keys for a `SecureLayer` over a `SecureChannel` communication. _No installation needed, already included in server and client libraries._
 
 ### 2. [SecurePeerJS](./packages/securepeerjs)
 
@@ -20,6 +20,7 @@ Peer server library adding identity guarantee for connecting clients
 
 Extension of SecurePeerKey that adds BIP32 (HD wallets) and BIP39 (mnemonic seed word list) functionality
 
-There are also a server and client example application available.
+![Dall-e picture](./pub/DALL%C2%B7E_SecurePeerJS.png)
 
-![Dali](./pub/DALL%C2%B7E_SecurePeerJS.png)
+
+There is also an [example server](./exampleserver/) and [example client](./exampleserver/)  application available.

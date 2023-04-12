@@ -1,5 +1,23 @@
 import sodium from 'libsodium-wrappers'
-import { type Handshake } from './'
+
+/**
+ * An unencrypted envelope that contains a signed and encrypted HandshakeMessage.
+ */
+export interface Handshake {
+  /**
+   * The base64-encoded encrypted HandshakeMessage.
+   */
+  message: string
+  /**
+   * The base64-encoded signature of the encrypted HandshakeMessage.
+   */
+  signature: string
+  /**
+   * The public signing key of the sender.
+   */
+  publicSignKey: string
+}
+
 /**
  * Key pair used for secure communication between two peers.
  */

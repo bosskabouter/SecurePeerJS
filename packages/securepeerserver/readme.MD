@@ -1,28 +1,35 @@
 
 # SecurePeerServer
 
-SecurePeerServer adds the handshake method used between peers to the connect handler when peer try to register. The server's public key (his peerId) must be known to clients before connecting, so clients can establish a shared secret for the handshake. This allows peers to guarantee their own identity on the network when connecting, avoiding others to use their address, as is possible in the normal peerserver.
+SecurePeerServer is an extension to [PeerServer](https://github.com/peers/peerjs-server) that adds hybrid encryption and signature verification to connecting peers. This allows peers to guarantee their identity and establish a secure connection.
 
-> this library is part of [SecurePeer](https://github.com/bosskabouter/SecurePeerJS)
+> This library is part of [SecurePeerJS](https://github.com/bosskabouter/SecurePeerJS)
 
-## Install
+## Installation
 
 ``` bash
 npm i securepeerserver
 ```
 
+## Usage
+
+To start the server, a [SecurePeerKey](../securepeerkey/) is needed (included in the server dependencies).
+
 ``` typescript
-    import { SecurePeerKey, createSecurePeerServer } from 'securepeer'
-    SecurePeerKey.create('theserverkey').then((key: SecurePeerKey) => {
-      createSecurePeerServer(key, {
-        port: 9000,
-        path: '/'
-      })
-    }).catch(console.error)
+import { SecurePeerKey, createSecurePeerServer } from 'securepeerserver'
+
+SecurePeerKey.create('theserverkey').then((key: SecurePeerKey) => {
+  createSecurePeerServer(key, {
+    port: 9000,
+    path: '/'
+  })
+}).catch(console.error)
 ```
->
-> - The createSecurePeerServer accepts, besides the required key, the same options as a normal peerserver.
-> - Also available createSecureExpressPeerServer for the equivalent ExpressPeerServer
+
+> - The createSecurePeerServer accepts the same [options](https://github.com/peers/peerjs-server#config--cli-options) as a normal peerserver, with the exception of generateClientId
+> - Also available createSecureExpressPeerServer for the equivalent [ExpressPeerServer](https://github.com/peers/peerjs-server#config--cli-options)
+
+## See [exampleserver](../../exampleserver) for a running node
 
 ``` bash
 > exampeserver@1.0.0 start
