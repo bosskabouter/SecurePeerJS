@@ -1,0 +1,18 @@
+{
+  "cSpell.words": [
+    "generichash",
+    "keypair",
+    "Kuit",
+    "libsodium",
+    "NONCEBYTES",
+    "peerjs",
+    "peerserver",
+    "secp",
+    "secretbox",
+    "securepeer",
+    "securepeerjs",
+    "securepeerkey",
+    "theserverkey",
+    "xchacha"
+  ]
+}

@@ -1,0 +1,30 @@
+{
+  "name": "securepeer",
+  "version": "1.0.0",
+  "description": "Extended peer server to authenticate connecting peers",
+  "keywords": [
+    "peerjs",
+    "identity",
+    "authentic"
+  ],
+  "homepage": "https://github.com/bosskabouter/SecurePeerJS/tree/master/packages/securepeer",
+  "scripts": {
+    "prestart": "tsc",
+    "build": "tsc",
+    "starnpm t": "node out/index.js",
+    "test": "NODE_OPTIONS=--experimental-vm-modules jest"
+  },
+  "author": "bosskabouter",
+  "license": "ISC",
+  "dependencies": {
+    "express": "^4.18.2",
+    "http": "^0.0.1-security",
+    "https": "^1.0.0",
+    "peer": "^1.0.0",
+    "securepeerkey": "file:../securepeerkey"
+  },
+  "devDependencies": {
+    "@types/jest": "^29.5.0",
+    "ts-jest": "^29.1.0"
+  }
+}

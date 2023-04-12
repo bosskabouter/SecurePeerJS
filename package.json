@@ -1,0 +1,56 @@
+{
+  "name": "securepeer-js",
+  "version": "1.0.0",
+  "description": "Extended Peers with hybrid security",
+  "homepage": "https://github.com/bosskabouter/SecurePeerJS",
+  "bugs": "https://github.com/bosskabouter/SecurePeerJS/issues",
+  "contributors": [
+    "paul.kuit@protonmail.com"
+  ],
+  "scripts": {
+    "test": " NODE_OPTIONS=--experimental-vm-modules jest",
+    "prepublish": "npm run build",
+    "lint": "eslint .",
+    "build": "npm run build:all",
+    "build:all": "lerna run build --stream --parallel",
+    "start": "concurrently \"npm run dev:example\" \"npm run dev:server\"",
+    "dev:example": "cd ../example && npm run dev",
+    "dev:server": "cd ../packages/securepeer && npm run start"
+  },
+  "keywords": [
+    "peer",
+    "p2p",
+    "peerjs",
+    "security",
+    "hybrid",
+    "encrypt",
+    "sign",
+    "identity",
+    "authentic",
+    "verification"
+  ],
+  "author": "bosskabouter",
+  "license": "ISC",
+  "workspaces": [
+    "packages/*",
+    "exampleserver",
+    "exampleclient"
+  ],
+  "devDependencies": {
+    "@faker-js/faker": "^7.6.0",
+    "@types/jest": "^29.5.0",
+    "@types/supertest": "^2.0.12",
+    "@typescript-eslint/eslint-plugin": "^5.58.0",
+    "concurrently": "^8.0.1",
+    "eslint": "^8.38.0",
+    "eslint-config-standard-with-typescript": "^34.0.1",
+    "eslint-plugin-import": "^2.27.5",
+    "eslint-plugin-n": "^15.7.0",
+    "eslint-plugin-promise": "^6.1.1",
+    "lerna": "^6.6.1",
+    "supertest": "^6.3.3",
+    "ts-jest": "^29.1.0",
+    "ts-node": "^10.9.1",
+    "typescript": "^4.9.5"
+  }
+}

@@ -1,0 +1,26 @@
+{
+  "name": "securepeerkey-bip",
+  "version": "1.0.0",
+  "description": "BIP key for SecurePeerJS",
+  "keywords": [
+    "bip32",
+    "bip39",
+    "SecurePeerJS"
+  ],
+  "homepage": "https://github.com/bosskabouter/SecurePeerJS/tree/master/packages/securepeer-bip",
+  "scripts": {
+    "build": "tsc",
+    "test": "jest"
+  },
+  "dependencies": {
+    "bip32": "^4.0.0",
+    "bip39": "^3.1.0",
+    "securepeerkey": "file:../securepeerkey",
+    "tiny-secp256k1": "^2.2.1"
+  },
+  "author": "bosskabouter@volatalk.org",
+  "license": "ISC",
+  "devDependencies": {
+    "@types/jest": "^29.5.0"
+  }
+}
