@@ -1,10 +1,10 @@
-import { type Server as HttpsServer } from 'https'
-import { type Server as HttpServer } from 'http'
-import { type Express } from 'express'
-import { type Handshake } from 'securepeerkey'
-import { SecurePeerKey } from 'securepeerkey/SecurePeerKey'
-import { SecureChannel } from 'securepeerkey/SecureChannel'
-import { type IClient, type IConfig, type IMessage, PeerServer, type PeerServerEvents, ExpressPeerServer } from 'peer'
+import type { Server as HttpsServer } from 'https'
+import type { Server as HttpServer } from 'http'
+import type { Express } from 'express'
+import type { IClient, IConfig, IMessage, PeerServerEvents } from 'peer'
+import type { Handshake } from 'securepeerkey'
+import { SecurePeerKey, SecureChannel } from 'securepeerkey'
+import { PeerServer, ExpressPeerServer } from 'peer'
 
 export { SecureChannel, SecurePeerKey }
 /**

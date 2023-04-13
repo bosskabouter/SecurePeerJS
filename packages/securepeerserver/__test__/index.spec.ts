@@ -1,18 +1,18 @@
-import request from 'supertest'
-import { type PeerServerEvents, type IClient } from 'peer'
-import { createSecureExpressPeerServer, SecurePeerKey, SecureChannel, createSecurePeerServer } from '.'
+
+import type { PeerServerEvents, IClient } from 'peer'
+import type { EncryptedMessage, Handshake } from 'securepeerkey'
+import type { IncomingMessage, Server, ServerResponse } from 'http'
+import { createSecureExpressPeerServer, SecurePeerKey, SecureChannel, createSecurePeerServer } from '../src'
 import express, { type Express } from 'express'
-import { type EncryptedMessage, type Handshake } from 'securepeerkey'
-import { type IncomingMessage, type Server, type ServerResponse } from 'http'
+
+import request from 'supertest'
 import { jest } from '@jest/globals'
 const TEST_PORT = 2000 + Math.floor(Math.random() * 5000)
 
 describe('SecurePeerServer', () => {
   test('Start Peerserver', async () => {
     const serverKey: SecurePeerKey = await SecurePeerKey.create()
-    // const peerServer = SecurePeerServer(serverKey, { port: TEST_PORT + 1 })
     expect(serverKey).toBeDefined()
-    // expect(peerServer).toBeDefined()
   })
 })
 describe('SecureExpressPeerServer', () => {

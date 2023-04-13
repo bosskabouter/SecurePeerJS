@@ -1,28 +1,56 @@
 {
   "name": "securepeerkey",
   "version": "1.0.0",
-  "main": "index.js",
   "description": "Key for secure hybrid handshake in SecurePeer",
+  "types": "out/index.d.ts",
+  "source": "src/index.ts",
+  "main": "out/index.js",
+  "module": "out/index.js",
+  "type": "commonjs",
+  "exports": {
+    ".": {
+      "require": "./out/index.js",
+      "import": "./out/esm/index.js"
+    },
+    "./out/index.js": {
+      "require": "./out/index.js",
+      "import": "./out/esm/index.js"
+    }
+  },
+  "targets": {
+    "binary": {
+      "source": "bin/peerjs.ts"
+    },
+    "main": {},
+    "module": {}
+  },
   "keywords": [
-    "SecurePeer",
+    "SecurePeerJS",
     "libsodium",
     "hybrid",
+    "security",
     "encrypt",
-    "sign"
+    "sign",
+    "handshake"
   ],
-  "homepage": "https://github.com/bosskabouter/SecurePeerJS/tree/master/packages/securepeerkey",
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/bosskabouter/SecurePeerJS/tree/master/packages/securepeerkey"
+  },
   "scripts": {
-    "build": "tsc",
-    "test": "jest"
+    "build": "tsc && tsc --module es2015 --outDir out/esm",
+    "dev": "tsc --watch & tsc --watch  --module es2015 --outDir out/esm",
+    "test": "NODE_OPTIONS=--experimental-vm-modules jest"
   },
   "author": "bosskabouter@protonmail.com",
   "license": "ISC",
   "devDependencies": {
+    "@tsconfig/node16-strictest-esm": "^1.0.3",
     "@types/jest": "^29.5.0",
     "@types/libsodium-wrappers": "^0.7.10",
     "jest": "^29.5.0",
     "ts-jest": "^29.1.0",
-    "typescript": "^5.0.4"
+    "typescript": "^4.9.5"
   },
   "dependencies": {
     "libsodium-wrappers": "^0.7.11"

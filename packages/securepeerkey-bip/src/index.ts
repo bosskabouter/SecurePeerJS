@@ -1,4 +1,4 @@
-import { SecurePeerKey } from 'securepeerkey/SecurePeerKey'
+import { SecurePeerKey } from 'securepeerkey'
 import * as bip39 from 'bip39'
 import * as bip32 from 'bip32'
 import * as ecc from 'tiny-secp256k1'

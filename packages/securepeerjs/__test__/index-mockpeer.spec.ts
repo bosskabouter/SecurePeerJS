@@ -3,8 +3,8 @@ import { type DataConnection, type PeerConnectOption } from 'peerjs'
 
 import { jest } from '@jest/globals'
 import { type SpiedFunction } from 'jest-mock'
-import { SecurePeerKey } from 'securepeerkey/SecurePeerKey'
-import { SecurePeer } from './SecurePeer'
+import { SecurePeerKey } from 'securepeerkey'
+import { SecurePeer } from '../src/SecurePeer'
 describe('SecurePeerJS', () => {
   let connectMock: SpiedFunction<(peer: string, options?: PeerConnectOption | undefined) => DataConnection>
 

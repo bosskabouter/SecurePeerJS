@@ -1,7 +1,11 @@
 {
   "name": "securepeerjs",
   "version": "1.0.1",
-  "main": "index.js",
+  "main": "out/index.js",
+  "source": "src/index.ts",
+  "types": "out/index.d.ts",
+  "type": "module",
+ 
   "description": "PeerJS extension with encrypted hybrid handshake",
   "homepage": "https://github.com/bosskabouter/SecurePeerJS/tree/master/packages/securepeerjs",
   "repository": {

@@ -20,7 +20,4 @@ Peer server library adding identity guarantee for connecting clients
 
 Extension of SecurePeerKey that adds BIP32 (HD wallets) and BIP39 (mnemonic seed word list) functionality
 
-![Dall-e picture](./pub/DALL%C2%B7E_SecurePeerJS.png)
-
-
 There is also an [example server](./exampleserver/) and [example client](./exampleserver/)  application available.

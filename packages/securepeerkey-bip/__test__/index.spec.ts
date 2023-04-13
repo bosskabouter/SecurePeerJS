@@ -1,9 +1,9 @@
-import { SecurePeerKeyBip } from '.'
+import { SecurePeerKeyBip } from '../src'
 
 const VALID_MNEMONIC =
   'plastic seed stadium payment arrange inherit risk spend suspect alone debris very'
 const INVALID_MNEMONIC =
-  'iehdej cldkcl cmmceed cckdc okdc ckm risk spend suspect alone debris very'
+  '111 222 333 444 555 ckm risk spend suspect alone debris very'
 
 describe('BIP Key', () => {
   test('should have valid new key', async () => {

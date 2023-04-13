@@ -1,7 +1,10 @@
 {
   "name": "securepeerserver",
   "version": "1.0.0",
-  "main": "index.js",
+  "type": "module",
+  "main": "out/index.js",
+  "types": "out/index.d.ts",
+  "source": "src/index.ts",
   "description": "Extended peer server to authenticate connecting peers",
   "keywords": [
     "peerjs",

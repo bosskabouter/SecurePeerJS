@@ -1,25 +1,5 @@
-import { type EncryptedMessage, type Handshake } from './'
-import { SecureChannel } from './SecureChannel'
-import { SecurePeerKey } from './SecurePeerKey'
+import { type EncryptedMessage, type Handshake, SecurePeerKey, SecureChannel } from '../src'
 
-describe('SecureKey from seed string', () => {
-  const justAseedString = 'JuStAsEeD'
-  test('should create equal keys from same seed string', async () => {
-    const key = await SecurePeerKey.create(justAseedString)
-    expect(key).toBeDefined()
-    const key2 = await SecurePeerKey.create(justAseedString)
-    expect(key2).toBeDefined()
-    expect(key).toEqual(key2)
-  })
-
-  test('should create different keys from different seed string', async () => {
-    const key = await SecurePeerKey.create(justAseedString)
-    expect(key).toBeDefined()
-    const key2 = await SecurePeerKey.create(justAseedString + justAseedString)
-    expect(key2).toBeDefined()
-    expect(key).not.toEqual(key2)
-  })
-})
 describe('SecureChannel after valid handshake', () => {
   const message = 'A message Bla blah'
   let secureChannel: SecureChannel
@@ -157,25 +137,5 @@ describe('Handshake', () => {
           )
       ).rejects.toThrow(/incorrect key pair for the given ciphertext/)
     })
-  })
-})
-
-describe('API', () => {
-  it('Should shake hands', async () => {
-    const key1 = await SecurePeerKey.create()
-    const key2 = await SecurePeerKey.create()
-
-    const handshake12 = key1.initiateHandshake(key2.peerId)
-    // send the handshake over to another key owner
-    const sentHandshake = handshake12.handshake
-    const sharedSecret21 = key2.receiveHandshake(key1.peerId, sentHandshake)
-
-    const secureChannel12 = new SecureChannel(handshake12.sharedSecret)
-    const secureChannel21 = new SecureChannel(sharedSecret21)
-
-    const encryptedMessage = secureChannel12.encryptMessage('Hello world!')
-    const decrypted = secureChannel21.decryptMessage(encryptedMessage)
-
-    expect(decrypted).toBe('Hello world!')
   })
 })

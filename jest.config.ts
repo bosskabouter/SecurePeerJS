@@ -21,8 +21,8 @@ const conf: JestConfigWithTsJest = {
     },
 
     {
-      preset: 'ts-jest/presets/default-esm',
-      displayName: 'securepeer',
+      preset: 'ts-jest',
+      displayName: 'securepeerserver',
       testEnvironment: 'node',
       testMatch: ['<rootDir>/packages/securepeerserver/**/**.(spec|test).ts?(x)'],
       detectLeaks: false,
@@ -38,7 +38,7 @@ const conf: JestConfigWithTsJest = {
       // other configuration options specific to the package
     },
     {
-      preset: 'ts-jest/presets/default-esm',
+      preset: 'ts-jest',
       displayName: 'securepeerkey-bip',
       testEnvironment: 'node',
       testMatch: ['<rootDir>/packages/securepeerkey-bip/**/*.(spec|test).ts?(x)']

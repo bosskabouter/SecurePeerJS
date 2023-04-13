@@ -1,8 +1,8 @@
 // import { DataConnection } from 'peerjs'
 // import { jest } from '@jest/globals'
 
-import { SecurePeerKey } from 'securepeerkey/SecurePeerKey'
-import { SecurePeer } from './SecurePeer'
+import { SecurePeerKey } from 'securepeerkey'
+import { SecurePeer } from '../src/SecurePeer'
 
 // Import the PeerJS library
 // jest.mock('peerjs', () => {

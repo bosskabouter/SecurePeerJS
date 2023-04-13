@@ -1,7 +1,6 @@
 import Peer, { type PeerJSOption, type PeerConnectOption, type DataConnection } from 'peerjs'
-import { type Handshake } from 'securepeerkey'
-import { SecureChannel } from 'securepeerkey/SecureChannel'
-import { type SecurePeerKey } from 'securepeerkey/SecurePeerKey'
+import { type Handshake, type SecurePeerKey } from 'securepeerkey'
+import { SecureChannel } from 'securepeerkey'
 import { SecureLayer } from './SecureLayer'
 
 /**

@@ -27,7 +27,7 @@ SecurePeerKey.create('theserverkey').then((key: SecurePeerKey) => {
 ```
 
 > - The createSecurePeerServer accepts the same [options](https://github.com/peers/peerjs-server#config--cli-options) as a normal peerserver, with the exception of generateClientId
-> - Also available createSecureExpressPeerServer for the equivalent [ExpressPeerServer](https://github.com/peers/peerjs-server#config--cli-options)
+> - Also available createSecureExpressPeerServer for the equivalent [ExpressPeerServer](https://github.com/peers/peerjs-server#combining-with-existing-express-app)
 
 ## See [exampleserver](../../exampleserver) for a running node
 

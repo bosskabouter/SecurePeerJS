@@ -1,7 +1,21 @@
 {
   "name": "securepeerkey-bip",
   "version": "1.0.0",
-  "main": "index.js",
+  "types": "out/index.d.ts",
+  "source": "src/index.ts",
+  "main": "out/index.js",
+  "module": "out/index.js",
+  "type": "commonjs",
+  "exports": {
+    ".": {
+      "require": "./out/index.js",
+      "import": "./out/esm/index.js"
+    },
+    "./out/index.js": {
+      "require": "./out/index.js",
+      "import": "./out/esm/index.js"
+    }
+  },
   "description": "BIP key for SecurePeerJS",
   "keywords": [
     "bip32",
@@ -14,8 +28,10 @@
     "url": "git+https://github.com/bosskabouter/SecurePeerJS.git"
   },
   "scripts": {
-    "build": "tsc",
-    "test": "jest"
+    "build": "tsc && tsc --module es2015 --outDir out/esm",
+    "dev": "tsc --watch & tsc --watch  --module es2015 --outDir out/esm",
+ 
+    "test": "NODE_OPTIONS=--experimental-vm-modules jest"
   },
   "dependencies": {
     "bip32": "^4.0.0",
