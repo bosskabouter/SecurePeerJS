@@ -1,8 +1,8 @@
 
 import type { PeerServerEvents, IClient } from 'peer'
-import type { EncryptedMessage, Handshake } from 'securepeerkey'
+import { type EncryptedMessage, type Handshake, SecurePeerKey, SecureChannel } from 'securepeerkey'
 import type { IncomingMessage, Server, ServerResponse } from 'http'
-import { createSecureExpressPeerServer, SecurePeerKey, SecureChannel, createSecurePeerServer } from '../src'
+import { createSecureExpressPeerServer, createSecurePeerServer } from '../src'
 import express, { type Express } from 'express'
 
 import request from 'supertest'
