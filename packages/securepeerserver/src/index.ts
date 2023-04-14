@@ -1,12 +1,12 @@
+
 import type { Server as HttpsServer } from 'https'
 import type { Server as HttpServer } from 'http'
 import type { Express } from 'express'
 import type { IClient, IConfig, IMessage, PeerServerEvents } from 'peer'
-import { type Handshake, SecureChannel, type SecurePeerKey } from 'securepeerkey'
 
 import { PeerServer, ExpressPeerServer } from 'peer'
+import { type Handshake, SecureChannel, type SecurePeerKey } from 'securepeerkey'
 
-export { type Handshake, SecureChannel, SecurePeerKey } from 'securepeerkey'
 /**
  * Returns a secure Express Peer server instance.
  *
@@ -96,7 +96,6 @@ function handleConnection (client: IClient, serverKey: SecurePeerKey): void {
     )
     return
   }
-
   try {
     client.send(new SecureChannel(serverKey.receiveHandshake(peerId, handshake)).encryptMessage('welcome ' + peerId))
   } catch (e: any) {

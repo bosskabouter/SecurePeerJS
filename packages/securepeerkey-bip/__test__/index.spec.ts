@@ -7,18 +7,18 @@ const INVALID_MNEMONIC =
 
 describe('BIP Key', () => {
   test('should have valid new key', async () => {
-    const securePeerKeyBip = await SecurePeerKeyBip.createBipKey()
+    const securePeerKeyBip = await SecurePeerKeyBip.create()
     testValidKey(securePeerKeyBip)
     expect(securePeerKeyBip).not.toEqual(
-      SecurePeerKeyBip.createBipKey()
+      SecurePeerKeyBip.create()
     )
   })
 
   test('should restore', async () => {
-    const SecureChannelKeyBU1 = await SecurePeerKeyBip.createBipKey(
+    const SecureChannelKeyBU1 = await SecurePeerKeyBip.create(
       VALID_MNEMONIC
     )
-    const SecureChannelKeyBU2 = await SecurePeerKeyBip.createBipKey(
+    const SecureChannelKeyBU2 = await SecurePeerKeyBip.create(
       VALID_MNEMONIC
     )
     testValidKey(SecureChannelKeyBU1)
@@ -36,7 +36,7 @@ describe('BIP Key', () => {
 
   test('Entered wrong mnemonic', async () => {
     await expect(async () => {
-      await SecurePeerKeyBip.createBipKey(INVALID_MNEMONIC)
+      await SecurePeerKeyBip.create(INVALID_MNEMONIC)
     }).rejects.toThrow('Invalid mnemonic')
   })
 })

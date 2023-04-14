@@ -3,11 +3,10 @@
   "compilerOptions": {
     "module": "commonjs",
     "target": "es5",
-    "lib": ["es6"],
-    "outDir": "out", 
+    "noEmit": false,
+    "outDir": "out",
     "resolveJsonModule": true,
     "exactOptionalPropertyTypes": false,
-    "forceConsistentCasingInFileNames": true,
     "declaration": true,
     "sourceMap": true,
     "esModuleInterop": true,

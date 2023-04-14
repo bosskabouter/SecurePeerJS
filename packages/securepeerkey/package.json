@@ -25,7 +25,8 @@
     "module": {}
   },
   "keywords": [
-    "SecurePeerJS",
+    "securepeerjs",
+    "peerjs",
     "libsodium",
     "hybrid",
     "security",
@@ -38,7 +39,7 @@
     "url": "https://github.com/bosskabouter/SecurePeerJS/tree/master/packages/securepeerkey"
   },
   "scripts": {
-    "build": "tsc && tsc --module es2015 --outDir out/esm",
+    "build": "tsc & tsc --module es2015 --outDir out/esm",
     "dev": "tsc --watch & tsc --watch  --module es2015 --outDir out/esm",
     "test": "NODE_OPTIONS=--experimental-vm-modules jest"
   },
@@ -53,6 +54,8 @@
     "typescript": "^4.9.5"
   },
   "dependencies": {
+    "buffer": "^6.0.3",
     "libsodium-wrappers": "^0.7.11"
-  }
+  },
+  "$schema": "https://json.schemastore.org/package"
 }

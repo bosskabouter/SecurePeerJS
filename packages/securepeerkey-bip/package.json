@@ -20,6 +20,7 @@
   "keywords": [
     "bip32",
     "bip39",
+    "secp256k1",
     "SecurePeerJS"
   ],
   "homepage": "https://github.com/bosskabouter/SecurePeerJS/tree/master/packages/securepeer-bip",
@@ -30,7 +31,6 @@
   "scripts": {
     "build": "tsc && tsc --module es2015 --outDir out/esm",
     "dev": "tsc --watch & tsc --watch  --module es2015 --outDir out/esm",
- 
     "test": "NODE_OPTIONS=--experimental-vm-modules jest"
   },
   "dependencies": {
@@ -43,5 +43,6 @@
   "license": "ISC",
   "devDependencies": {
     "@types/jest": "^29.5.0"
-  }
+  },
+  "$schema": "https://json.schemastore.org/package"
 }

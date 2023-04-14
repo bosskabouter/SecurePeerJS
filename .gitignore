@@ -2,4 +2,4 @@ node_modules/
 out/
 *-lock.json
 coverage/
-example*/
+.parcel-cache/*

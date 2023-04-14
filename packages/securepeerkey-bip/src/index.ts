@@ -11,7 +11,7 @@ export class SecurePeerKeyBip extends SecurePeerKey {
    * @param mnemonic
    * @returns
    */
-  public static async createBipKey (
+  public static override async create (
     mnemonic?: string
   ): Promise<SecurePeerKeyBip> {
     if (mnemonic == null) { mnemonic = bip39.generateMnemonic(KEY_STRENGTH_B) } else if (!bip39.validateMnemonic(mnemonic)) { throw Error('Invalid mnemonic backup value: ' + mnemonic) }

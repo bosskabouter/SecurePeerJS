@@ -2,7 +2,7 @@
   "extends": "@tsconfig/node16-strictest-esm/tsconfig.json",
   "compilerOptions": {
     "lib": ["esnext"],
-    "noEmit": false,
+    "noEmit": true,
     "resolveJsonModule": true,
     "exactOptionalPropertyTypes": false,
     "outDir": "out",

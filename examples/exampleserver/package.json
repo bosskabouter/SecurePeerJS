@@ -1,0 +1,21 @@
+{
+  "name": "exampleserver",
+  "main": "out/index.js",
+  
+  "version": "1.0.0",
+  "scripts": {
+    "build": "tsc",
+    "start": "node out/index.js"
+  },
+  "author": "",
+  "license": "ISC",
+  "dependencies": {
+    "securepeerkey": "file:../../packages/securepeerkey",
+    "securepeerserver": "file:../../packages/securepeerserver"
+  },
+  "description": "",
+  "$schema": "https://json.schemastore.org/package",
+  "devDependencies": {
+    "parcel": "^2.8.3"
+  }
+}

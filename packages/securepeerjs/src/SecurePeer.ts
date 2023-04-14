@@ -8,14 +8,22 @@ import { SecureLayer } from './SecureLayer'
  */
 export class SecurePeer extends Peer {
   constructor (private readonly key: SecurePeerKey, options?: PeerJSOption, public readonly serverPublicKey?: string) {
-    super(key.peerId, (serverPublicKey != null)
-      ? { ...options, token: JSON.stringify(key.initiateHandshake(serverPublicKey).handshake) }
-      : options)
-    let serverInit: {
-      sharedSecret: Uint8Array
-      handshake: Handshake
+    let serverSharedSecret: Uint8Array
+
+    if (serverPublicKey !== null && serverPublicKey !== undefined) {
+      // expect a secure server
+      const serverInit: {
+        sharedSecret: Uint8Array
+        handshake: Handshake
+      } = key.initiateHandshake(serverPublicKey)
+      options = (serverPublicKey != null)
+        ? { ...options, token: JSON.stringify(serverInit.handshake) }
+        : options
+      serverSharedSecret = serverInit.sharedSecret
     }
-    super.on('open', (id) => { this.handleOpenServer(id, serverInit.sharedSecret) })
+
+    super(key.peerId, options)
+    super.on('open', (id) => { this.handleOpenServer(id, serverSharedSecret) })
     super.on('connection', this.handleConnection)
     super.on('error', console.error)
   }

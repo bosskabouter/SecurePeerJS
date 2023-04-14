@@ -1,7 +1,7 @@
 
 # SecurePeerServer
 
-SecurePeerServer is an extension to [PeerServer](https://github.com/peers/peerjs-server) that adds hybrid encryption and signature verification to connecting peers. This allows peers to guarantee their identity and establish a secure connection.
+SecurePeerServer is an extension to [PeerServer](https://github.com/peers/peerjs-server) that adds hybrid encryption and signature verification to connecting peers. This allows peers to guarantee their identity and establish a secure connection between other peers.
 
 > This library is part of [SecurePeerJS](https://github.com/bosskabouter/SecurePeerJS)
 

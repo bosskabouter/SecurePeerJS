@@ -4,7 +4,6 @@ const conf: JestConfigWithTsJest = {
   verbose: true,
   // testMatch: ['<rootDir>/**/*.spec.ts'],
 
-  collectCoverage: true,
   collectCoverageFrom: ['<rootDir>/packages/**/src/**'],
   detectOpenHandles: true,
   detectLeaks: false,
