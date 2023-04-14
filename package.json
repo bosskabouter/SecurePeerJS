@@ -17,9 +17,9 @@
     "lint": "eslint .",
     "build": "npm run build:all",
     "build:all": "lerna run build --stream --parallel",
-    "start": "concurrently \"npm run dev:example\" \"npm run dev:server\"",
-    "dev:example": "cd ../example && npm run dev",
-    "dev:server": "cd ../packages/securepeer && npm run start"
+    "start": "concurrently \"npm run dev:client\" \"npm run dev:server\"",
+    "dev:client": "cd ./examples/exampleclient1/ && npm run preview",
+    "dev:server": "cd ./examples/exampleserver/ && npm run start"
   },
   "keywords": [
     "peer",
