@@ -54,7 +54,7 @@ export function createSecurePeerServer (
 const disableGenerateClientId = (config?: Partial<IConfig>): Partial<IConfig> => {
   config = {
     ...config,
-    generateClientId: undefined
+    generateClientId: () => ''
   }
   console.debug('SecurePeerServer config', config)
   return config
