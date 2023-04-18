@@ -1,11 +1,11 @@
-import { SecurePeerKey } from 'securepeerkey'
 import * as bip39 from 'bip39'
 import * as bip32 from 'bip32'
 import * as ecc from 'tiny-secp256k1'
+import { SecureCommunicationKey } from 'secure-communication-kit'
 
 const KEY_STRENGTH_B = 128
 
-export class SecurePeerKeyBip extends SecurePeerKey {
+export class SecurePeerKeyBip extends SecureCommunicationKey {
   /**
    *
    * @param mnemonic
@@ -18,7 +18,7 @@ export class SecurePeerKeyBip extends SecurePeerKey {
     const seedBuf = bip39.mnemonicToSeedSync(mnemonic)
     const entropy = bip39.mnemonicToEntropy(mnemonic)
 
-    const normalKey = (await SecurePeerKey.create(entropy))
+    const normalKey = (await SecureCommunicationKey.create(entropy))
     const masterKey = bip32.BIP32Factory(ecc).fromSeed(seedBuf)
 
     return new this(
@@ -38,8 +38,8 @@ export class SecurePeerKeyBip extends SecurePeerKey {
   private constructor (
     public readonly mnemonic: string,
     public masterKey: bip32.BIP32Interface,
-    securePeerKey: SecurePeerKey
+    securePeerKey: SecureCommunicationKey
   ) {
-    super(securePeerKey.securePeerKeySet)
+    super(securePeerKey.keySet)
   }
 }

@@ -1,0 +1,35 @@
+{
+  "name": "securepush",
+  "version": "1.0.0",
+  "description": "Send encrypted WebPush from client to client",
+  "main": "out/index.js",
+  "types": "out/index.d.ts",
+  "source": "src/index.ts",
+  "scripts": {
+    "vapid": "../../node_modules/.bin/web-push generate-vapid-keys",
+    "test": "jest"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/bosskabouter/SecurePeerJS.git#master"
+  },
+  "keywords": [
+    "web-push"
+  ],
+  "author": "Paul Kuit",
+  "license": "ISC",
+  "bugs": {
+    "url": "https://github.com/bosskabouter/SecurePeerJS/issues"
+  },
+  "homepage": "https://github.com/bosskabouter/SecurePeerJS/tree/master#readme",
+  "dependencies": {
+    "dotenv": "^16.0.3",
+    "express": "^4.18.2",
+    "securepushjs": "file:../securepushjs",
+    "web-push": "^3.5.0"
+  },
+  "devDependencies": {
+    "@types/web-push": "^3.3.2",
+    "supertest": "^6.3.3"
+  }
+}

@@ -3,3 +3,4 @@ out/
 *-lock.json
 coverage/
 .parcel-cache/
+examples/examplepushclient/dev-dist/*

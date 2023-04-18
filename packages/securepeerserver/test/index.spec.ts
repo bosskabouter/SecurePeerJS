@@ -1,17 +1,17 @@
 
 import type { PeerServerEvents, IClient } from 'peer'
-import { type EncryptedMessage, type Handshake, SecurePeerKey, SecureChannel } from 'securepeerkey'
 import type { IncomingMessage, Server, ServerResponse } from 'http'
 import { createSecureExpressPeerServer, createSecurePeerServer } from '../src'
 import express, { type Express } from 'express'
 
 import request from 'supertest'
 import { jest } from '@jest/globals'
+import { type AsymmetricallyEncryptedMessage, type EncryptedHandshake, SecureCommunicationKey, SecureChannel } from 'secure-communication-kit'
 const TEST_PORT = 2000 + Math.floor(Math.random() * 5000)
 
 describe('SecurePeerServer', () => {
   test('Start Peerserver', async () => {
-    const serverKey: SecurePeerKey = await SecurePeerKey.create()
+    const serverKey = await SecureCommunicationKey.create()
     expect(serverKey).toBeDefined()
   })
 })
@@ -19,16 +19,16 @@ describe('SecureExpressPeerServer', () => {
   let app: Express
   let client: IClient
 
-  let serverKey: SecurePeerKey
-  let clientKey: SecurePeerKey
+  let serverKey: SecureCommunicationKey
+  let clientKey: SecureCommunicationKey
   let peerServer: (express.Express & PeerServerEvents) | null
-  let initiatedHandshake: { sharedSecret: Uint8Array, handshake: Handshake }
+  let initiatedHandshake: { sharedSecret: Uint8Array, handshake: EncryptedHandshake }
 
   let server: Server<typeof IncomingMessage, typeof ServerResponse>
   beforeAll((done) => {
     app = express()
     // jest.useFakeTimers()
-    void Promise.all([SecurePeerKey.create(), SecurePeerKey.create()]).then(
+    void Promise.all([SecureCommunicationKey.create(), SecureCommunicationKey.create()]).then(
       async ([serverKeyResult, clientKeyResult]) => {
         serverKey = serverKeyResult
         clientKey = clientKeyResult
@@ -85,7 +85,7 @@ describe('SecureExpressPeerServer', () => {
   test('peer with valid welcome', async () => {
     const token: string = JSON.stringify(initiatedHandshake.handshake)
     // expect a welcome message to be sent, encrypted with the shared secret
-    const sendMock = jest.fn(async (encryptedWelcome: EncryptedMessage) => {
+    const sendMock = jest.fn(async (encryptedWelcome: AsymmetricallyEncryptedMessage) => {
       expect(encryptedWelcome).toBeDefined()
       const decryptedWelcome = new SecureChannel(initiatedHandshake.sharedSecret)
         .decryptMessage(encryptedWelcome)
@@ -159,7 +159,7 @@ describe('SecureExpressPeerServer', () => {
   })
 
   test('peer with tampered token - close socket', async () => {
-    const key = await SecurePeerKey.create()
+    const key = await SecureCommunicationKey.create()
 
     const { handshake } = key.initiateHandshake(serverKey.peerId)
 

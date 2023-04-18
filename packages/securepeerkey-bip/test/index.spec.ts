@@ -29,8 +29,8 @@ describe('BIP Key', () => {
     expect(SecureChannelKeyBU1.masterKey).toEqual(
       SecureChannelKeyBU2.masterKey
     )
-    expect(SecureChannelKeyBU1.securePeerKeySet.signKeyPair).toEqual(
-      SecureChannelKeyBU2.securePeerKeySet.signKeyPair
+    expect(SecureChannelKeyBU1.keySet.signKeyPair).toEqual(
+      SecureChannelKeyBU2.keySet.signKeyPair
     )
   })
 
@@ -47,7 +47,7 @@ function testValidKey (secureChannelKey: SecurePeerKeyBip | null): void {
     expect(secureChannelKey.mnemonic).toBeDefined()
     expect(secureChannelKey.mnemonic.split(' ').length).toBe(12)
     expect(secureChannelKey.peerId).toBeDefined()
-    expect(secureChannelKey.securePeerKeySet.signKeyPair).toBeDefined()
+    expect(secureChannelKey.keySet.signKeyPair).toBeDefined()
     expect(secureChannelKey.masterKey).toBeDefined()
   }
 }

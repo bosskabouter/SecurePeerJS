@@ -36,7 +36,7 @@
   "dependencies": {
     "bip32": "^4.0.0",
     "bip39": "^3.1.0",
-    "securepeerkey": "file:../securepeerkey",
+    "secure-communication-kit": "file:../secure-communication-kit",
     "tiny-secp256k1": "^2.2.1"
   },
   "author": "bosskabouter@volatalk.org",

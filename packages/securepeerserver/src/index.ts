@@ -5,18 +5,19 @@ import type { Express } from 'express'
 import type { IClient, IConfig, IMessage, PeerServerEvents } from 'peer'
 
 import { PeerServer, ExpressPeerServer } from 'peer'
-import { type Handshake, SecureChannel, type SecurePeerKey } from 'securepeerkey'
+import { type EncryptedHandshake, SecureChannel, type SecureCommunicationKey } from 'secure-communication-kit'
 
+export * from 'secure-communication-kit'
 /**
  * Returns a secure Express Peer server instance.
  *
- * @param serverKey The SecurePeerKey object used for encryption.
+ * @param serverKey The SecureCommunicationKey object used for encryption.
  * @param server An HTTP or HTTPS server instance.
  * @param options Optional configuration options.
  * @returns An Express instance with PeerServerEvents.
  */
 export function createSecureExpressPeerServer (
-  serverKey: SecurePeerKey,
+  serverKey: SecureCommunicationKey,
   server: HttpsServer | HttpServer,
   options?: Partial<IConfig>
 ): Express & PeerServerEvents {
@@ -29,13 +30,13 @@ export function createSecureExpressPeerServer (
 /**
  * Returns a secure Peer server instance.
  *
- * @param serverKey The SecurePeerKey object used for encryption.
+ * @param serverKey The SecureCommunicationKey object used for encryption.
  * @param options Optional configuration options.
  * @param callback An optional callback function to be executed after the server is created.
  * @returns An Express instance with PeerServerEvents.
  */
 export function createSecurePeerServer (
-  serverKey: SecurePeerKey,
+  serverKey: SecureCommunicationKey,
   options?: Partial<IConfig>,
   callback?: (server: HttpsServer | HttpServer) => void
 ): Express & PeerServerEvents {
@@ -64,12 +65,12 @@ const disableGenerateClientId = (config?: Partial<IConfig>): Partial<IConfig> =>
  * Initializes a secure server instance with event handlers.
  *
  * @param peerServer The Peer server instance to modify.
- * @param serverKey The SecurePeerKey object used for encryption.
+ * @param serverKey The SecureCommunicationKey object used for encryption.
  * @returns The modified Peer server instance with event handlers.
  */
 function initializeSecureServer (
   peerServer: Express & PeerServerEvents,
-  serverKey: SecurePeerKey
+  serverKey: SecureCommunicationKey
 ): Express & PeerServerEvents {
   peerServer.on('connection', (client: IClient) => {
     handleConnection(client, serverKey)
@@ -81,9 +82,9 @@ function initializeSecureServer (
   return peerServer
 }
 
-function handleConnection (client: IClient, serverKey: SecurePeerKey): void {
+function handleConnection (client: IClient, serverKey: SecureCommunicationKey): void {
   const peerId = client.getId()
-  let handshake: Handshake
+  let handshake: EncryptedHandshake
 
   try {
     handshake = JSON.parse(client.getToken())

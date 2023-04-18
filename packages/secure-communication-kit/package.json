@@ -1,7 +1,7 @@
 {
-  "name": "securepeerkey",
+  "name": "secure-communication-kit",
   "version": "1.0.1",
-  "description": "Key for secure hybrid handshake in SecurePeer",
+  "description": "Tools for secure communication between peers",
   "types": "out/index.d.ts",
   "source": "src/index.ts",
   "main": "out/index.js",

@@ -1,21 +1,17 @@
 {
   "compilerOptions": {
-    "module": "commonjs",
-    "target": "es5",
-    "noEmit": false,
-    "outDir": "out",
-    "resolveJsonModule": true,
-    "exactOptionalPropertyTypes": false,
-    "declaration": true,
-    "sourceMap": true,
-    "esModuleInterop": true,
-    "strict": true,
-
-
-
     "lib": [
-      "es2021"
+      "esnext"
     ],
+    "noEmit": true,
+    "resolveJsonModule": true,
+    "exactOptionalPropertyTypes": true,
+    "outDir": "out",
+    "declaration": true,
+    "module": "es2022",
+    "target": "es2021",
+    "strict": true,
+    "esModuleInterop": true,
     "skipLibCheck": true,
     "forceConsistentCasingInFileNames": true,
     "moduleResolution": "node",
@@ -34,7 +30,8 @@
     "./src/**/*"
   ],
   "exclude": [
-    "test"
+    "test",
+    "bin"
   ],
   "$schema": "https://json.schemastore.org/tsconfig"
 }

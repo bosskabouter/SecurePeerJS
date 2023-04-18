@@ -9,6 +9,13 @@ const conf: JestConfigWithTsJest = {
   detectLeaks: false,
   forceExit: true,
   projects: [
+    {
+      preset: 'ts-jest/presets/default-esm',
+      displayName: 'secure-communication-kit',
+      testEnvironment: 'node',
+      testMatch: ['<rootDir>/packages/secure-communication-kit/**/*.(spec|test).ts?(x)']
+      // other configuration options specific to the package
+    },
 
     {
       preset: 'ts-jest',
@@ -29,18 +36,26 @@ const conf: JestConfigWithTsJest = {
 
       // other configuration options specific to the package
     },
-    {
-      preset: 'ts-jest/presets/default-esm',
-      displayName: 'securepeerkey',
-      testEnvironment: 'node',
-      testMatch: ['<rootDir>/packages/securepeerkey/**/*.(spec|test).ts?(x)']
-      // other configuration options specific to the package
-    },
+
     {
       preset: 'ts-jest',
       displayName: 'securepeerkey-bip',
       testEnvironment: 'node',
       testMatch: ['<rootDir>/packages/securepeerkey-bip/**/*.(spec|test).ts?(x)']
+      // other configuration options specific to the package
+    },
+    {
+      preset: 'ts-jest',
+      displayName: 'securepush',
+      testEnvironment: 'node',
+      testMatch: ['<rootDir>/packages/securepush/**/*.(spec|test).ts?(x)']
+      // other configuration options specific to the package
+    },
+    {
+      preset: 'ts-jest',
+      displayName: 'securepushjs',
+      testEnvironment: 'jsdom',
+      testMatch: ['<rootDir>/packages/securepushjs/**/*.(spec|test).ts?(x)']
       // other configuration options specific to the package
     }
   ]

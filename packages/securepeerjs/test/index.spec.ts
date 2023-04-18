@@ -1,8 +1,7 @@
 // import { DataConnection } from 'peerjs'
 // import { jest } from '@jest/globals'
 
-import { SecurePeerKey } from 'securepeerkey'
-import { SecurePeer } from '../src/SecurePeer'
+import { SecurePeer, SecureCommunicationKey } from '../src/'
 
 // Import the PeerJS library
 // jest.mock('peerjs', () => {
@@ -15,7 +14,7 @@ import { SecurePeer } from '../src/SecurePeer'
 //   return mockPeer
 // })
 
-let key1: SecurePeerKey //, key2: SecurePeerKey
+let key1: SecureCommunicationKey //, key2: SecurePeerKey
 
 // //@ts-ignore
 // global.RTCPeerConnection = jest.fn(() => ({
@@ -27,7 +26,7 @@ let key1: SecurePeerKey //, key2: SecurePeerKey
 // }))
 describe('SecurePeer JS - client Connecting real server', () => {
   beforeAll(async () => {
-    key1 = await SecurePeerKey.create()
+    key1 = await SecureCommunicationKey.create()
 
     // key2 = await SecurePeerKey.create()
     expect(key1).toBeDefined()
@@ -91,7 +90,7 @@ describe('SecurePeer JS - client Connecting real server', () => {
 
 describe('API', () => {
   test('should work', async () => {
-    const key = await SecurePeerKey.create('some seed')
+    const key = await SecureCommunicationKey.create('some seed')
     const securePeer = new SecurePeer(key)
 
     securePeer.on('open', () => {

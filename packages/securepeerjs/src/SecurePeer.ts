@@ -1,20 +1,19 @@
 import Peer, { type PeerJSOption, type PeerConnectOption, type DataConnection, type MediaConnection } from 'peerjs'
-import { type Handshake, type SecurePeerKey } from 'securepeerkey'
-import { SecureChannel } from 'securepeerkey'
 import { SecureLayer } from './SecureLayer'
+import { type EncryptedHandshake, SecureChannel, type SecureCommunicationKey } from '.'
 
 /**
  * A SecurePeer has a guaranteed verified identity and establishes encrypted P2P communication over trusted connections.
  */
 export class SecurePeer extends Peer {
-  constructor (private readonly key: SecurePeerKey, options?: PeerJSOption, public readonly serverPublicKey?: string) {
+  constructor (private readonly key: SecureCommunicationKey, options?: PeerJSOption, public readonly serverPublicKey?: string) {
     let serverSharedSecret: Uint8Array
 
     if (serverPublicKey !== null && serverPublicKey !== undefined) {
       // expect a secure server
       const serverInit: {
         sharedSecret: Uint8Array
-        handshake: Handshake
+        handshake: EncryptedHandshake
       } = key.initiateHandshake(serverPublicKey)
       options = (serverPublicKey != null)
         ? { ...options, token: JSON.stringify(serverInit.handshake) }

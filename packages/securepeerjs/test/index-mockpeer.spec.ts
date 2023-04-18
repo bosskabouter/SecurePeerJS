@@ -3,12 +3,12 @@ import { type DataConnection, type PeerConnectOption } from 'peerjs'
 
 import { jest } from '@jest/globals'
 import { type SpiedFunction } from 'jest-mock'
-import { SecurePeerKey } from 'securepeerkey'
 import { SecurePeer } from '../src/SecurePeer'
+import { SecureCommunicationKey } from '../src'
 describe('SecurePeerJS', () => {
   let connectMock: SpiedFunction<(peer: string, options?: PeerConnectOption | undefined) => DataConnection>
 
-  let key1: SecurePeerKey, key2: SecurePeerKey
+  let key1: SecureCommunicationKey, key2: SecureCommunicationKey
   let peer1: SecurePeer, peer2: SecurePeer
 
   beforeAll((done) => {
@@ -23,7 +23,7 @@ describe('SecurePeerJS', () => {
     })
 
     // peer1 = new SecurePeer(key1)
-    void Promise.all([SecurePeerKey.create(), SecurePeerKey.create()]).then((r) => {
+    void Promise.all([SecureCommunicationKey.create(), SecureCommunicationKey.create()]).then((r) => {
       peer1 = new SecurePeer(key1 = r[0])
       expect(key1.peerId).toBeDefined()
       peer2 = new SecurePeer(key2 = r[1])

@@ -1,6 +1,6 @@
 import EventEmitter from 'eventemitter3'
 import { type DataConnection } from 'peerjs'
-import { type EncryptedMessage, type SecureChannel } from 'securepeerkey'
+import { type AsymmetricallyEncryptedMessage, type SecureChannel } from '.'
 interface SecurePeerEvents {
   decrypted:(string)
   connected: (secureLayer: SecureLayer) => void
@@ -19,7 +19,7 @@ export class SecureLayer extends EventEmitter<SecurePeerEvents> {
     this.dataConnection.on('open', () => {
       this.dataConnection.on('data', (data) => {
         try {
-          this.emit('decrypted', this.secureChannel.decryptMessage(JSON.parse(data as string) as EncryptedMessage))
+          this.emit('decrypted', this.secureChannel.decryptMessage(JSON.parse(data as string) as AsymmetricallyEncryptedMessage))
         } catch (error) { console.error(error) }
       })
     })

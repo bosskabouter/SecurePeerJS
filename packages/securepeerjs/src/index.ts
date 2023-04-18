@@ -1,3 +1,3 @@
 export * from './SecureLayer'
 export * from './SecurePeer'
-export { SecurePeerKey } from 'securepeerkey'
+export * from 'secure-communication-kit'
