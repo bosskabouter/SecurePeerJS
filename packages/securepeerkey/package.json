@@ -1,6 +1,6 @@
 {
   "name": "securepeerkey",
-  "version": "1.0.0",
+  "version": "1.0.1",
   "description": "Key for secure hybrid handshake in SecurePeer",
   "types": "out/index.d.ts",
   "source": "src/index.ts",
@@ -19,7 +19,7 @@
   },
   "targets": {
     "binary": {
-      "source": "bin/peerjs.ts"
+      "source": "bin/index.ts"
     },
     "main": {},
     "module": {}
@@ -40,6 +40,7 @@
   },
   "scripts": {
     "build": "tsc & tsc --module es2015 --outDir out/esm",
+    "coverage":"jest --coverage",
     "dev": "tsc --watch & tsc --watch  --module es2015 --outDir out/esm",
     "test": "NODE_OPTIONS=--experimental-vm-modules jest"
   },

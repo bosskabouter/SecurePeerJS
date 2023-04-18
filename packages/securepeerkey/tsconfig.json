@@ -1,18 +1,36 @@
 {
-  "extends": "@tsconfig/node16-strictest-esm/tsconfig.json",
   "compilerOptions": {
     "module": "commonjs",
     "target": "es5",
-    "lib": ["es6"],
-    "outDir": "out", 
+    "lib": [
+      "es6"
+    ],
+    "outDir": "out",
     "resolveJsonModule": true,
-    "exactOptionalPropertyTypes": false,
+    "exactOptionalPropertyTypes": true,
     "forceConsistentCasingInFileNames": true,
     "declaration": true,
     "sourceMap": true,
     "esModuleInterop": true,
-    "strict": true
+    "strict": true,
+    "skipLibCheck": true,
+    "moduleResolution": "node",
+    "allowUnusedLabels": false,
+    "allowUnreachableCode": false,
+    "noFallthroughCasesInSwitch": true,
+    "noImplicitOverride": true,
+    "noImplicitReturns": true,
+    "noPropertyAccessFromIndexSignature": true,
+    "noUncheckedIndexedAccess": true,
+    "noUnusedLocals": true,
+    "noUnusedParameters": true,
+    "checkJs": true
   },
-  "include": ["./src/**/*"],
-  "exclude": ["test"]
+  "include": [
+    "./src/**/*"
+  ],
+  "exclude": [
+    "test"
+  ],
+  "$schema": "https://json.schemastore.org/tsconfig"
 }

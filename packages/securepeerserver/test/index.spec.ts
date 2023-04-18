@@ -158,7 +158,7 @@ describe('SecureExpressPeerServer', () => {
     expect(closeMock).toBeCalled()
   })
 
-  test('peer with tempered token - close socket', async () => {
+  test('peer with tampered token - close socket', async () => {
     const key = await SecurePeerKey.create()
 
     const { handshake } = key.initiateHandshake(serverKey.peerId)

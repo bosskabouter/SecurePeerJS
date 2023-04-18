@@ -14,18 +14,18 @@ npm i && npm start
 
 ### 1. [SecurePeerKey](./packages/securepeerkey)
 
-Asymmetric Encryption and Signing keys for a `SecureLayer` over a `SecureChannel` communication.
+Asymmetric Encryption and Signing keys for a `SecureChannel` communication.
 
 ### 2. [SecurePeerJS](./packages/securepeerjs)
 
- Extension of [peerjs client library](https://github.com/peers/peerjs) adding hybrid security between peers.
+ Extension of [peerjs client library](https://github.com/peers/peerjs) adding `SecureLayer` between peers.
 
 ### 3. [SecurePeerServer](./packages/securepeerserver) (optional)
 
-Extension of [PeerJS Server](https://github.com/peers/peerjs-server) adding identity verification for connecting clients.
+Extension of [PeerJS Server](https://github.com/peers/peerjs-server) adds identity verification for connecting clients.
 
 ### 4. [SecurePeerKey-BIP](./packages/securepeerkey-bip) (optional)
 
-Extension of [SecurePeerKey](#1-securepeerkey) that adds BIP32 (HD wallets) and BIP39 (mnemonic seed word list) functionality
+Extension of [SecurePeerKey](#1-securepeerkey) adds BIP32 (HD wallets) and BIP39 (mnemonic seed word list) functionality to the key.
 
-There are is also a [example server](./exampleserver/) and [example client Vite + Typescript](./exampleclient1/) and [example client Vite + React](./exampleclient1/)  available.
+There are is also an [example server](./exampleserver/), [example client Vite + Typescript](./exampleclient1/) and [example client Vite + React](./exampleclient1/) available.

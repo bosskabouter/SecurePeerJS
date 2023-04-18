@@ -12,6 +12,11 @@
     "esModuleInterop": true,
     "strict": true
   },
-  "include": ["./src/**/*"],
-  "exclude": ["test"]
+  "include": [
+    "./src/**/*"
+  ],
+  "exclude": [
+    "test"
+  ],
+  "$schema": "https://json.schemastore.org/tsconfig"
 }

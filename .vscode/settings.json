@@ -4,10 +4,12 @@
     "exampleclient",
     "exampleserver",
     "generichash",
+    "KEYBYTES",
     "keypair",
     "Kuit",
     "libsodium",
     "NONCEBYTES",
+    "nvalid",
     "peerjs",
     "peerserver",
     "secp",
@@ -16,7 +18,10 @@
     "securepeerjs",
     "securepeerkey",
     "securepeerserver",
+    "securewebpush",
+    "securewebpushclient",
     "theserverkey",
+    "webpush",
     "xchacha"
   ]
 }

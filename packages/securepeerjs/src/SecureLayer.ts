@@ -1,7 +1,6 @@
 import EventEmitter from 'eventemitter3'
 import { type DataConnection } from 'peerjs'
-import { type EncryptedMessage } from 'securepeerkey'
-import { type SecureChannel } from 'securepeerkey/src/SecureChannel'
+import { type EncryptedMessage, type SecureChannel } from 'securepeerkey'
 interface SecurePeerEvents {
   decrypted:(string)
   connected: (secureLayer: SecureLayer) => void

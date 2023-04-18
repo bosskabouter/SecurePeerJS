@@ -90,7 +90,7 @@ describe('SecurePeer JS - client Connecting real server', () => {
 })
 
 describe('API', () => {
-  test('should first', async () => {
+  test('should work', async () => {
     const key = await SecurePeerKey.create('some seed')
     const securePeer = new SecurePeer(key)
 

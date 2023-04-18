@@ -16,7 +16,7 @@ describe('SecureChannel after valid handshake', () => {
     expect(secureChannel).toBeDefined()
   })
 
-  it('should EncryptedMessage from message', async () => {
+  test('should EncryptedMessage from message', async () => {
     const encryptedMessage: EncryptedMessage =
        secureChannel.encryptMessage(message)
     expect(encryptedMessage).toBeDefined()
@@ -28,7 +28,7 @@ describe('SecureChannel after valid handshake', () => {
     beforeEach(async () => {
       encryptedMessage = secureChannel.encryptMessage(message)
     })
-    it('should decryptMessage', async () => {
+    test('should decryptMessage', async () => {
       const decryptedMessage = secureChannel.decryptMessage(
         encryptedMessage
       )
@@ -36,7 +36,7 @@ describe('SecureChannel after valid handshake', () => {
       expect(decryptedMessage).toEqual(message)
     })
 
-    it('should reject: tempered shared secret', async () => {
+    test('should reject: tampered shared secret', async () => {
       const secureChannel2 = new SecureChannel(
         new Uint8Array(Array.from(sharedSecret).reverse())
       )
@@ -89,7 +89,7 @@ describe('Handshake', () => {
       fakeHandshake = fakeKey.initiateHandshake(receiver.peerId)
     })
 
-    test('tempered Signature', () => {
+    test('tampered Signature', () => {
       initiated.handshake.signature = fakeHandshake.handshake.signature
       void expect(
         async () =>
@@ -99,7 +99,7 @@ describe('Handshake', () => {
           )
       ).rejects.toThrow(/Invalid signature/)
     })
-    test('tempered public SignKey', async () => {
+    test('tampered public SignKey', async () => {
       initiated.handshake.publicSignKey = fakeHandshake.handshake.publicSignKey
       await expect(
         async () =>
@@ -109,7 +109,7 @@ describe('Handshake', () => {
           )
       ).rejects.toThrow(/Invalid signature/)
     })
-    test('tempered messageBytes', async () => {
+    test('tampered messageBytes', async () => {
       initiated.handshake.message = fakeHandshake.handshake.message
       await expect(
         async () =>
@@ -120,7 +120,7 @@ describe('Handshake', () => {
       ).rejects.toThrow(/Invalid signature/)
     })
 
-    test('tempered public peerId', async () => {
+    test('tampered public peerId', async () => {
       const fakePubId = fakeKey.peerId
       await expect(
         async () =>
@@ -128,7 +128,7 @@ describe('Handshake', () => {
       ).rejects.toThrow(/incorrect key pair for the given ciphertext/)
     })
 
-    test('tempered everything', async () => {
+    test('tampered everything', async () => {
       await expect(
         async () =>
           receiver.receiveHandshake(

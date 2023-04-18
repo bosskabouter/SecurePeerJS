@@ -1,12 +1,5 @@
 import sodium from 'libsodium-wrappers'
-
-/**
- * Every encrypted messages send contains a new nonce
- */
-export interface EncryptedMessage {
-  nonce: string
-  cipher: string
-}
+import { type EncryptedMessage } from '.'
 
 /**
  * Once a shared secret has been established in between two participants during handshake, a secure channel is able to encrypt and decrypt messages using this shared common secret
@@ -22,22 +15,19 @@ export class SecureChannel {
     // Generate a new random nonce for each message
     const nonce = sodium.randombytes_buf(sodium.crypto_secretbox_NONCEBYTES)
     // Encrypt the message with the shared secret and nonce
-    const cipherText = sodium.crypto_secretbox_easy(
+    const cipherB64 = sodium.to_base64(sodium.crypto_secretbox_easy(
       sodium.from_string(message),
       nonce,
       this.sharedSecret
-    )
-    return {
-      nonce: sodium.to_base64(nonce),
-      cipher: sodium.to_base64(cipherText)
-    }
+    ))
+    return { nonceB64: sodium.to_base64(nonce), cipherB64 }
   }
 
   decryptMessage (encryptedMessage: EncryptedMessage): string {
     // Decrypt the message with the shared secret and nonce
     const decryptedBytes = sodium.crypto_secretbox_open_easy(
-      sodium.from_base64(encryptedMessage.cipher),
-      sodium.from_base64(encryptedMessage.nonce),
+      sodium.from_base64(encryptedMessage.cipherB64),
+      sodium.from_base64(encryptedMessage.nonceB64),
       this.sharedSecret
     )
     return sodium.to_string(decryptedBytes)

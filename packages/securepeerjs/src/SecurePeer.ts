@@ -1,10 +1,10 @@
-import Peer, { type PeerJSOption, type PeerConnectOption, type DataConnection } from 'peerjs'
+import Peer, { type PeerJSOption, type PeerConnectOption, type DataConnection, type MediaConnection } from 'peerjs'
 import { type Handshake, type SecurePeerKey } from 'securepeerkey'
 import { SecureChannel } from 'securepeerkey'
 import { SecureLayer } from './SecureLayer'
 
 /**
- * A SecurePeer guarantees its identity and  establish encrypted communication over trusted connections.
+ * A SecurePeer has a guaranteed verified identity and establishes encrypted P2P communication over trusted connections.
  */
 export class SecurePeer extends Peer {
   constructor (private readonly key: SecurePeerKey, options?: PeerJSOption, public readonly serverPublicKey?: string) {
@@ -24,7 +24,8 @@ export class SecurePeer extends Peer {
 
     super(key.peerId, options)
     super.on('open', (id) => { this.handleOpenServer(id, serverSharedSecret) })
-    super.on('connection', this.handleConnection)
+    super.on('connection', this.handleDataConnection)
+    super.on('call', this.handleMediaConnection)
     super.on('error', console.error)
   }
 
@@ -43,16 +44,34 @@ export class SecurePeer extends Peer {
   }
 
   /**
-   * Handler for new incoming DataConnections. A SecurePeer closes the socket from any dataConnection with invalid handshake.
+   * Handler for new incoming DataConnections. A SecurePeer closes the socket from any dataConnection with invalid handshake. If valid, a new `SecureLayer` is placed in `dataConnection.metadata.secureLayer`
    * @param dataConnection
    */
-  private handleConnection (dataConnection: DataConnection): void {
+  private handleDataConnection (dataConnection: DataConnection): void {
+    const secureChannel = this.validateConnection(dataConnection)
+    secureChannel !== undefined && (dataConnection.metadata.secureLayer = new SecureLayer(
+      secureChannel, dataConnection))
+  }
+
+  /**
+   * Handler for new incoming MediaConnections. A SecurePeer closes the socket from any mediaConnection with invalid handshake.
+   * @param dataConnection
+   */
+  private handleMediaConnection (mediaConnection: MediaConnection): void {
+    this.validateConnection(mediaConnection)
+  }
+
+  /**
+ * Validates all (data and media) incoming connections for a valid handshake in metadata. Connection is closed if not found ur invalid.
+ * @param con
+ * @returns
+ */
+  private validateConnection (con: MediaConnection | DataConnection): SecureChannel | undefined {
     try {
-      dataConnection.metadata.secureLayer = new SecureLayer(
-        new SecureChannel(this.key.receiveHandshake(dataConnection.peer, dataConnection.metadata)), dataConnection)
+      return new SecureChannel(this.key.receiveHandshake(con.peer, con.metadata))
     } catch (e: unknown) {
-      dataConnection.close()
-      console.warn('Invalid handshake from connection', e)
+      con.close()
+      console.warn('Invalid handshake from connection', e, con)
       super.emit('error', new Error('Invalid handshake'))
     }
   }
