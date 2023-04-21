@@ -40,7 +40,7 @@ describe('SecureExpressPeerServer', () => {
             path: '/myApp',
             port: TEST_PORT
           })
-          if (peerServer === null) throw Error('Peer NULL')
+          expect(peerServer).toBeDefined()
 
           const sps = createSecurePeerServer(serverKey, { port: TEST_PORT + 1 })
           expect(sps).toBeDefined()

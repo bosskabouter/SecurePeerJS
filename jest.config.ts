@@ -4,6 +4,7 @@ const conf: JestConfigWithTsJest = {
   verbose: true,
   // testMatch: ['<rootDir>/**/*.spec.ts'],
 
+  collectCoverage: true,
   collectCoverageFrom: ['<rootDir>/packages/**/src/**'],
   detectOpenHandles: true,
   detectLeaks: false,
@@ -46,10 +47,12 @@ const conf: JestConfigWithTsJest = {
     },
     {
       preset: 'ts-jest',
-      displayName: 'securepush',
+      displayName: 'securepushserver',
       testEnvironment: 'node',
-      testMatch: ['<rootDir>/packages/securepush/**/*.(spec|test).ts?(x)']
+      testMatch: ['<rootDir>/packages/securepushserver/**/*.(spec|test).ts?(x)'],
       // other configuration options specific to the package
+      detectLeaks: false,
+      detectOpenHandles: true
     },
     {
       preset: 'ts-jest',

@@ -1,36 +1,62 @@
 import * as webpush from 'web-push'
 import request from 'supertest'
-import express from 'express'
-import { SecurePush } from '../src'
 import { SecureCommunicationKey } from 'secure-communication-kit'
+import { createPushServer } from '../src'
+import publicContent from '../app.json'
+import express from 'express'
+import type { IncomingMessage, Server, ServerResponse } from 'http'
+
+const TEST_PORT = 2000 + Math.floor(Math.random() * 5000)
 
 jest.mock('web-push', () => ({
-  sendNotification: jest.fn().mockImplementation(async () => await Promise.resolve(true)),
+  sendNotification: jest.fn().mockResolvedValue(
+    {
+      statusCode: 200,
+      headers: {},
+      body: 'OK'
+    }
+  ),
   setVapidDetails: jest.fn()
 }))
-// const webpush =
-// jest.genMockFromModule('web-push')
-
 describe('SecurePush', () => {
-  const app = express()
-
-  let securePush: SecurePush
   let serverKey: SecureCommunicationKey
+  let app: express.Express
+  let server: Server<typeof IncomingMessage, typeof ServerResponse>
 
   beforeAll(async () => {
+    app = express()
     serverKey = await SecureCommunicationKey.create()
-    // sender = new SecurePeerRelay(await SecureCommunicationKey.create())
 
-    securePush = new SecurePush(app, serverKey)
+    server = app.listen(TEST_PORT, () => {
+      console.log(`App listening on port ${TEST_PORT}`)
+
+      const sps = createPushServer(serverKey, { port: (TEST_PORT + 1) })
+      expect(sps).toBeDefined()
+
+      app.use('/', sps)
+    })
   })
   afterEach(() => {
-    // jest.resetAllMocks()
-  })
-  afterAll(() => {
-    app.removeAllListeners()
-    expect(securePush).toBeDefined()
+    jest.resetAllMocks()
   })
 
+  afterAll((done) => {
+    server.unref()
+    jest.resetModules()
+    server.close(done)
+  }, 10000)
+  test('should get public content', async () => {
+    const resp = await request(app).get('')
+    expect(resp).toBeDefined()
+    expect(resp.error).toBeFalsy()
+    expect(resp.body).toMatchObject(publicContent)
+  })
+
+  test('should get test', async () => {
+    const resp = await request(app).get('/test')
+    expect(resp).toBeDefined()
+    expect(resp.error).toBeFalsy()
+  })
   test('POST /send should send a notification', async () => {
     const mockPayload = '@@@SOME_ENCRYPTED_CONTENT@@@'
     const subscription = {
@@ -40,8 +66,6 @@ describe('SecurePush', () => {
         p256dh: 'p256dh'
       }
     }
-
-    // { (webpush.sendNotification as jest.MockedFunction<typeof webpush.sendNotification>).mockResolvedValueOnce({}) }
 
     const encryptedMockEndpoint = SecureCommunicationKey.encryptWithRelay(serverKey.peerId, JSON.stringify(subscription))
 
@@ -60,12 +84,12 @@ describe('SecurePush', () => {
 
     expect(response.error).toBeFalsy()
     expect(response.status).toBeTruthy()
-    expect(response.text).toBeTruthy()
 
     expect(webpush.sendNotification).toHaveBeenCalledTimes(1)
     expect(webpush.sendNotification).toHaveBeenCalledWith(
       subscription,
-      mockPayload
+      mockPayload,
+      { TTL: 60000 }
     )
   })
 

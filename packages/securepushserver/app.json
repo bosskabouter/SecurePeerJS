@@ -1,0 +1,5 @@
+{
+	"name": "Secure Push Server",
+	"description": "A server side element to broker encrypted push messages between clients",
+	"website": "https://github.com/bosskabouter/SecurePeerJS"
+}

@@ -1,21 +1,22 @@
 {
   "name": "exampleserver",
   "main": "out/index.js",
-  
   "version": "1.0.0",
   "scripts": {
     "build": "tsc",
-    "start": "node out/index.js"
+    "start": "node out/index.js",
+    "dev": "nodemon --watch src -e ts --exec 'npm run build && npm run start'"
   },
   "author": "",
   "license": "ISC",
   "dependencies": {
-    "securepeerkey": "file:../../packages/securepeerkey",
-    "securepeerserver": "file:../../packages/securepeerserver"
+    "securepeerserver": "file:../../packages/securepeerserver",
+    "securepushserver": "file:../../packages/securepushserver"
   },
   "description": "",
   "$schema": "https://json.schemastore.org/package",
   "devDependencies": {
+    "nodemon": "^2.0.22",
     "parcel": "^2.8.3"
   }
 }

@@ -4,3 +4,4 @@ out/
 coverage/
 .parcel-cache/
 examples/examplepushclient/dev-dist/*
+* copy.ts

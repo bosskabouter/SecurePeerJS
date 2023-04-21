@@ -27,7 +27,7 @@
     "http": "^0.0.1-security",
     "https": "^1.0.0",
     "peer": "^1.0.0",
-    "securepeerkey": "file:../securepeerkey"
+    "secure-communication-kit": "file:../secure-communication-kit"
   },
   "devDependencies": {
     "@types/jest": "^29.5.0",
