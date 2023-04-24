@@ -5,7 +5,6 @@
     ],
     "noEmit": true,
     "resolveJsonModule": true,
-
     "exactOptionalPropertyTypes": true,
     "outDir": "out",
     "declaration": true,
@@ -21,7 +20,7 @@
     "allowUnreachableCode": false,
     "noFallthroughCasesInSwitch": true,
     "noImplicitOverride": true,
-    "noImplicitReturns": true, 
+    "noImplicitReturns": true,
     "noPropertyAccessFromIndexSignature": true,
     "noUncheckedIndexedAccess": true,
     "noUnusedLocals": true,

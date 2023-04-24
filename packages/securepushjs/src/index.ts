@@ -1,18 +1,20 @@
 import axios from 'axios'
-import { SecureCommunicationKey, type SymmetricallyEncryptedMessage } from 'secure-communication-kit'
+import { SecureCommunicationKey, type AsymmetricallyEncryptedMessage, type EncryptedHandshake, type SymmetricallyEncryptedMessage } from 'secure-communication-kit'
 
 export * from 'secure-communication-kit'
 export * from './sw-init'
 /**
- *A 
+ *A
  */
 export interface WebPushRequest {
-  encryptedPushSubscription: SymmetricallyEncryptedMessage
-  encryptedPayload: string
+  encryptedPushMessages: AsymmetricallyEncryptedMessage<SecurePushMessage[]>
+  handshake: EncryptedHandshake
+  senderId: string
 }
 
-export interface SecurePushMessage extends NotificationOptions {
-  encryptedEndpoint: SymmetricallyEncryptedMessage
+export interface SecurePushMessage {
+  encryptedEndpoint: SymmetricallyEncryptedMessage<PushSubscription>
+  encryptedPayload: SymmetricallyEncryptedMessage<NotificationOptions>
 }
 
 export interface PushServerConfig {
@@ -27,10 +29,12 @@ export interface PushServerConfig {
 export class SecurePusher {
   constructor (private readonly pushSubscription: PushSubscription, private readonly key: SecureCommunicationKey, private readonly serverConfig: PushServerConfig) {}
 
-  async pushMessage (securePushMessage: SecurePushMessage): Promise<boolean> {
-    this.key.initiateHandshake(this.serverConfig.publicKey)
+  async pushMessage (securePushMessages: SecurePushMessage[]): Promise<boolean> {
+    const { secureChannel, handshake } = this.key.initiateHandshake(this.serverConfig.publicKey)
+    const encryptedPushMessages = secureChannel.encrypt(securePushMessages)
+    const webPushRequest: WebPushRequest = { handshake, encryptedPushMessages, senderId: this.key.peerId }
     return await new Promise((resolve, reject) => {
-      axios.post(this.serverConfig.host, { securePushMessage }).then(response => { resolve(response.status === 200) }).catch(reject)
+      axios.post(this.serverConfig.host, webPushRequest).then(response => { resolve(response.status === 200) }).catch(reject)
     })
   }
 
@@ -39,7 +43,7 @@ export class SecurePusher {
    * @param subscription E
    * @returns
    */
-  getSharedSubscription (): SymmetricallyEncryptedMessage {
-    return SecureCommunicationKey.encryptWithRelay(this.serverConfig.publicKey, JSON.stringify(this.pushSubscription))
+  shareSubscription (): SymmetricallyEncryptedMessage<PushSubscription> {
+    return SecureCommunicationKey.encrypt(this.serverConfig.publicKey, this.pushSubscription)
   }
 }

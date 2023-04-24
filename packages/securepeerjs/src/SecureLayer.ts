@@ -19,7 +19,7 @@ export class SecureLayer extends EventEmitter<SecurePeerEvents> {
     this.dataConnection.on('open', () => {
       this.dataConnection.on('data', (data) => {
         try {
-          this.emit('decrypted', this.secureChannel.decryptMessage(JSON.parse(data as string) as AsymmetricallyEncryptedMessage))
+          this.emit('decrypted', this.secureChannel.decrypt(JSON.parse(data as string) as AsymmetricallyEncryptedMessage<string>))
         } catch (error) { console.error(error) }
       })
     })
@@ -31,6 +31,6 @@ export class SecureLayer extends EventEmitter<SecurePeerEvents> {
    * @param chunked
    */
   send (data: string, chunked?: boolean | undefined): void {
-    this.dataConnection.send(JSON.stringify(this.secureChannel.encryptMessage(data)), chunked)
+    this.dataConnection.send(JSON.stringify(this.secureChannel.encrypt(data)), chunked)
   }
 }

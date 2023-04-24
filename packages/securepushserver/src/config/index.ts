@@ -1,8 +1,6 @@
 import type { CorsOptions } from 'cors'
-import { type SecureCommunicationKey } from '../'
 
 export interface IConfig {
-  readonly secureKey: SecureCommunicationKey | null
   readonly host: string
   readonly port: number
   readonly expire_timeout: number
@@ -18,21 +16,23 @@ export interface IConfig {
     cert: string
   }
   readonly corsOptions: CorsOptions
+
+  pushMaxBytes: number
 }
 
 const defaultConfig: IConfig = {
-  secureKey: null,
   host: '::',
   port: 9000,
   expire_timeout: 5000,
   alive_timeout: 60000,
-  key: 'peerjs',
+  key: 'securepushjs',
   path: '/',
   concurrent_limit: 5000,
   allow_discovery: false,
   proxied: false,
   cleanup_out_msgs: 1000,
-  corsOptions: { origin: true }
-}
+  corsOptions: { origin: true },
 
+  pushMaxBytes: 4 * 1000
+}
 export default defaultConfig

@@ -16,7 +16,13 @@
     "url": "git+https://github.com/bosskabouter/SecurePeerJS.git#master"
   },
   "keywords": [
-    "web-push"
+    "web-push",
+    "SecurePeerJS",
+    "libsodium",
+    "encrypted",
+    "push",
+    "messages",
+    "offline"
   ],
   "author": "Paul Kuit",
   "license": "ISC",

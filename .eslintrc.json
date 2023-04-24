@@ -21,6 +21,7 @@
         "node_modules/",
         "**/*.d.ts",
         "**/out/**",
-        "**/dist/**"
+        "**/dist/**",
+        "**/dev-dist/**"
       ]
 }

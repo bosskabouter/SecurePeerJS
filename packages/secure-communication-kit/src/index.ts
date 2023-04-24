@@ -24,18 +24,21 @@ export interface EncryptedHandshake {
 AsymmetricallyEncryptedMessage is encrypted using the public key of the intended recipient. While this provides confidentiality, it does not provide protection against potential attacks on the communication channel or on the recipient's private key.
 
  */
-export interface AsymmetricallyEncryptedMessage {
-  nonceB64: string
-  cipherB64: string
+export class AsymmetricallyEncryptedMessage<T> {
+  constructor (readonly nonceB64: string, readonly cipherB64: string
+  ) {}
+
+  decrypt (secureCommunicationKey: SecureCommunicationKey, sender: string): T {
+    return secureCommunicationKey.decrypt<T>(sender, this)
+  }
 }
-/**
- * A SecureRelayMessage is encrypted using a symmetric key, which is then itself encrypted using the public key of the relay server. This means that the relay server does not need to know the sender's public key to decrypt and forward the message to the intended recipient. Instead, the recipient's private key is used to decrypt the symmetric key, which is then used to decrypt the message. This allows for secure communication without the need for the relay server to know the identities of the sender and recipient.
- *22
-A SecureRelayMessage is designed to provide secure communication through a relay server, while also maintaining the confidentiality of the message contents. It achieves this by encrypting the message using a symmetric key, which is then itself encrypted using the public key of the relay server. The relay server can then forward the message to the intended recipient without being able to read its contents.
- * @see [encryptForRelay](#SecureRelay-encryptForRelay)
- * @see [decryptFromRelay](#SecureRelay-decryptFromRelay)
- */
-export type SymmetricallyEncryptedMessage = AsymmetricallyEncryptedMessage & { encryptedKeyB64: string }
+
+export class SymmetricallyEncryptedMessage<T> extends AsymmetricallyEncryptedMessage<T> {
+  constructor (override readonly nonceB64: string, override readonly cipherB64: string, readonly encryptedKeyB64: string) { super(nonceB64, cipherB64) }
+  override decrypt (secureCommunicationKey: SecureCommunicationKey): T {
+    return secureCommunicationKey.decryptSym<T>(this)
+  }
+}
 
 /**
  * Key pair used for secure communication between two peers.
@@ -166,10 +169,10 @@ In a normal SecureMessage, the public key of the sender is needed because it is 
    * @param message - The message to be encrypted.
    * @returns The encrypted message and nonce.
    */
-  encryptWithPublicKey (publicKey: string, message: string): AsymmetricallyEncryptedMessage {
+  encrypt<T> (publicKey: string, object: T): AsymmetricallyEncryptedMessage<T> {
     const nonce = sodium.randombytes_buf(sodium.crypto_box_NONCEBYTES)
-    const cipherB64 = sodium.to_base64(sodium.crypto_box_easy(message, nonce, sodium.from_base64(publicKey, sodium.base64_variants.URLSAFE), this.keySet.boxKeyPair.privateKey))
-    return { nonceB64: sodium.to_base64(nonce), cipherB64 }
+    const cipherB64 = sodium.to_base64(sodium.crypto_box_easy(JSON.stringify(object), nonce, sodium.from_base64(publicKey, sodium.base64_variants.URLSAFE), this.keySet.boxKeyPair.privateKey))
+    return new AsymmetricallyEncryptedMessage<T>(sodium.to_base64(nonce), cipherB64)
   }
 
   /**
@@ -178,34 +181,47 @@ In a normal SecureMessage, the public key of the sender is needed because it is 
  * @param encryptedMessage - The encrypted message and nonce.
  * @returns The decrypted message.
  */
-  decryptWithPublicKey (originPublicKey: string, encryptedMessage: AsymmetricallyEncryptedMessage): string {
-    return sodium.to_string(
+  decrypt<T> (originPublicKey: string, encryptedMessage: AsymmetricallyEncryptedMessage<T>): T {
+    return JSON.parse(sodium.to_string(
       sodium.crypto_box_open_easy(
         sodium.from_base64(encryptedMessage.cipherB64),
         sodium.from_base64(encryptedMessage.nonceB64),
         sodium.from_base64(originPublicKey, sodium.base64_variants.URLSAFE),
         this.keySet.boxKeyPair.privateKey
-      )
+      ))
     )
   }
 
   /**
- *
+ * Synonym for static encrypt
+ * @see SecureChannel.encrypt
  * @param publicKey
- * @param message
+ * @param obj
  * @returns
  */
-  static encryptWithRelay (publicKey: string, message: string): SymmetricallyEncryptedMessage {
+  encryptAnonym<T>(publicKey: string, obj: T): SymmetricallyEncryptedMessage<T> {
+    return SecureCommunicationKey.encrypt(publicKey, obj)
+  }
+
+  /**
+ * 1. Generate a random symmetric key for AES encryption
+ * 2. Encrypt the message with AES
+ * 3. Encrypt the given symmetric key with RSA public key
+ * @param publicKey public key to seal the symmetric key with
+ * @param message a message to be encrypted for given public key
+ * @returns an encrypted message with symmetric key sealed for given public key
+ */
+  static encrypt<T> (publicKey: string, obj: T): SymmetricallyEncryptedMessage<T> {
   // Generate a random symmetric key for AES encryption
     const sharedSecret = sodium.randombytes_buf(sodium.crypto_secretbox_KEYBYTES)
 
     // Encrypt the message with AES
     const nonce = sodium.randombytes_buf(sodium.crypto_secretbox_NONCEBYTES)
-    const cipherB64 = sodium.to_base64(sodium.crypto_secretbox_easy(message, nonce, sharedSecret))
+    const cipherB64 = sodium.to_base64(sodium.crypto_secretbox_easy(JSON.stringify(obj), nonce, sharedSecret))
 
     // Encrypt the symmetric key with RSA public key of the relay server
     const encryptedKeyB64 = sodium.to_base64(sodium.crypto_box_seal(sharedSecret, sodium.from_base64(publicKey, sodium.base64_variants.URLSAFE)))
-    return { cipherB64, encryptedKeyB64, nonceB64: sodium.to_base64(nonce) }
+    return new SymmetricallyEncryptedMessage(sodium.to_base64(nonce), cipherB64, encryptedKeyB64)
   }
 
   /**
@@ -213,11 +229,11 @@ In a normal SecureMessage, the public key of the sender is needed because it is 
  * @param relayedMessage
  * @returns
  */
-  decryptFromRelay (relayedMessage: SymmetricallyEncryptedMessage): string {
-    const decryptedKey = sodium.crypto_box_seal_open(sodium.from_base64(relayedMessage.encryptedKeyB64), this.keySet.boxKeyPair.publicKey, this.keySet.boxKeyPair.privateKey)
+  decryptSym<T> (relayedMessage: SymmetricallyEncryptedMessage<T>): T {
+    const sharedSecret = sodium.crypto_box_seal_open(sodium.from_base64(relayedMessage.encryptedKeyB64), this.keySet.boxKeyPair.publicKey, this.keySet.boxKeyPair.privateKey)
 
     // Decrypt the message with the recovered symmetric key
-    return sodium.to_string(sodium.crypto_secretbox_open_easy(sodium.from_base64(relayedMessage.cipherB64), sodium.from_base64(relayedMessage.nonceB64), decryptedKey))
+    return JSON.parse(sodium.to_string(sodium.crypto_secretbox_open_easy(sodium.from_base64(relayedMessage.cipherB64), sodium.from_base64(relayedMessage.nonceB64), sharedSecret)))
   }
 }
 /**
@@ -252,25 +268,25 @@ export class SecureChannel {
      */
   constructor (public readonly sharedSecret: Uint8Array) {}
 
-  encryptMessage (message: string): AsymmetricallyEncryptedMessage {
+  encrypt<T> (obj: T): AsymmetricallyEncryptedMessage<T> {
     // Generate a new random nonce for each message
     const nonce = sodium.randombytes_buf(sodium.crypto_secretbox_NONCEBYTES)
     // Encrypt the message with the shared secret and nonce
     const cipherB64 = sodium.to_base64(sodium.crypto_secretbox_easy(
-      sodium.from_string(message),
+      sodium.from_string(JSON.stringify(obj)),
       nonce,
       this.sharedSecret
     ))
-    return { nonceB64: sodium.to_base64(nonce), cipherB64 }
+    return new AsymmetricallyEncryptedMessage(sodium.to_base64(nonce), cipherB64)
   }
 
-  decryptMessage (encryptedMessage: AsymmetricallyEncryptedMessage): string {
+  decrypt<T> (encrypted: AsymmetricallyEncryptedMessage<T>): T {
     // Decrypt the message with the shared secret and nonce
     const decryptedBytes = sodium.crypto_secretbox_open_easy(
-      sodium.from_base64(encryptedMessage.cipherB64),
-      sodium.from_base64(encryptedMessage.nonceB64),
+      sodium.from_base64(encrypted.cipherB64),
+      sodium.from_base64(encrypted.nonceB64),
       this.sharedSecret
     )
-    return sodium.to_string(decryptedBytes)
+    return JSON.parse(sodium.to_string(decryptedBytes))
   }
 }

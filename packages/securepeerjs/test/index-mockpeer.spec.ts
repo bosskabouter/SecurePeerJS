@@ -77,6 +77,7 @@ describe('SecurePeerJS', () => {
     const secureLayer12 = peer1.connectSecurely(key2.peerId)
 
     expect(secureLayer12).toBeDefined()
+    expect(secureLayer12.dataConnection).toBeDefined()
     secureLayer12.send('Data to encrypt')
     // Set up a promise to wait for the connection event
   })

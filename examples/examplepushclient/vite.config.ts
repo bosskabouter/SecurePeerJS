@@ -4,14 +4,22 @@ import { VitePWA } from 'vite-plugin-pwa'
 
 // https://vitejs.dev/config/
 export default defineConfig({
+  // server: { https: true },
+  // preview: { https: true },
   plugins: [react(),
     // https://vite-pwa-org.netlify.app/guide/
     VitePWA({
-      filename: 'sw.ts',
-      injectRegister: 'inline',
-      srcDir: 'src',
       strategies: 'injectManifest',
+      srcDir: 'my-sw-dir',
+      filename: 'sw.js',
+      injectRegister: 'inline',
+      // mode: 'development',
+      // outDir: 'dist',
 
+      // registerType: 'autoUpdate',
+      // injectManifest: {
+      //   injectionPoint: undefined
+      // },
       devOptions: {
         type: 'module',
         enabled: true
@@ -37,6 +45,7 @@ export default defineConfig({
         display: 'standalone'
       },
       workbox: {
+        swDest: 'my-dist/my-sw.js',
         runtimeCaching: [
           {
             urlPattern: /^https:\/\/localhost\//,

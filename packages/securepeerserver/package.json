@@ -18,6 +18,7 @@
   "scripts": {
     "build": "parcel build",
     "start": "node out/index.js",
+    "dev": "nodemon --watch src -e ts --exec 'npm run build'",
     "test": "jest"
   },
   "author": "Paul Kuit",

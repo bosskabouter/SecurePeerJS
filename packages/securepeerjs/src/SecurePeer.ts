@@ -1,6 +1,6 @@
 import Peer, { type PeerJSOption, type PeerConnectOption, type DataConnection, type MediaConnection } from 'peerjs'
 import { SecureLayer } from './SecureLayer'
-import { type EncryptedHandshake, SecureChannel, type SecureCommunicationKey } from '.'
+import { type SecureChannel, type SecureCommunicationKey } from '.'
 
 /**
  * A SecurePeer has a guaranteed verified identity and establishes encrypted P2P communication over trusted connections.
@@ -11,14 +11,11 @@ export class SecurePeer extends Peer {
 
     if (serverPublicKey !== null && serverPublicKey !== undefined) {
       // expect a secure server
-      const serverInit: {
-        sharedSecret: Uint8Array
-        handshake: EncryptedHandshake
-      } = key.initiateHandshake(serverPublicKey)
+      const serverInit = key.initiateHandshake(serverPublicKey)
       options = (serverPublicKey != null)
         ? { ...options, token: JSON.stringify(serverInit.handshake) }
         : options
-      serverSharedSecret = serverInit.sharedSecret
+      serverSharedSecret = serverInit.secureChannel.sharedSecret
     }
 
     super(key.peerId, options)
@@ -38,7 +35,7 @@ export class SecurePeer extends Peer {
     const initiatedHandShake = this.key.initiateHandshake(peerId)
     options = { ...options, metadata: initiatedHandShake.handshake }
     const conn = super.connect(peerId, options)
-    const secureLayer = new SecureLayer(new SecureChannel(initiatedHandShake.sharedSecret), conn)
+    const secureLayer = new SecureLayer(initiatedHandShake.secureChannel, conn)
     return secureLayer
   }
 
@@ -67,7 +64,7 @@ export class SecurePeer extends Peer {
  */
   private validateConnection (con: MediaConnection | DataConnection): SecureChannel | undefined {
     try {
-      return new SecureChannel(this.key.receiveHandshake(con.peer, con.metadata))
+      return this.key.receiveHandshake(con.peer, con.metadata)
     } catch (e: unknown) {
       con.close()
       console.warn('Invalid handshake from connection', e, con)

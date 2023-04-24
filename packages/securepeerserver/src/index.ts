@@ -5,7 +5,7 @@ import type { Express } from 'express'
 import type { IClient, IConfig, IMessage, PeerServerEvents } from 'peer'
 
 import { PeerServer, ExpressPeerServer } from 'peer'
-import { type EncryptedHandshake, SecureChannel, type SecureCommunicationKey } from 'secure-communication-kit'
+import { type EncryptedHandshake, type SecureCommunicationKey } from 'secure-communication-kit'
 
 export * from 'secure-communication-kit'
 /**
@@ -98,7 +98,7 @@ function handleConnection (client: IClient, serverKey: SecureCommunicationKey): 
     return
   }
   try {
-    client.send(new SecureChannel(serverKey.receiveHandshake(peerId, handshake)).encryptMessage('welcome ' + peerId))
+    client.send(serverKey.receiveHandshake(peerId, handshake).encrypt('welcome ' + peerId))
   } catch (e: any) {
     client.getSocket()?.close()
     console.info(

@@ -1,4 +1,4 @@
-import { type AsymmetricallyEncryptedMessage, SecureChannel, SecureCommunicationKey, type EncryptedHandshake } from '../src'
+import { type AsymmetricallyEncryptedMessage, SecureChannel, SecureCommunicationKey, type EncryptedHandshake, SymmetricallyEncryptedMessage } from '../src'
 
 describe('SecureCommunicationKit', () => {
   let peer1: SecureCommunicationKey
@@ -42,8 +42,8 @@ describe('SecureCommunicationKit', () => {
       const { secureChannel: secureChannel12, handshake } = peer1.initiateHandshake(peer2.peerId)
       const secureChannel21 = peer2.receiveHandshake(peer1.peerId, handshake)
 
-      const encryptedMessage = secureChannel12.encryptMessage('Hello world!')
-      const decrypted = secureChannel21.decryptMessage(encryptedMessage)
+      const encryptedMessage = secureChannel12.encrypt('Hello world!')
+      const decrypted = secureChannel21.decrypt(encryptedMessage)
 
       expect(decrypted).toBe('Hello world!')
     })
@@ -79,14 +79,14 @@ describe('SecureCommunicationKit', () => {
     })
   })
 
-  test('should encryptWithPublicKey simple text', async () => {
-    const ciphered = peer1.encryptWithPublicKey(peer2.peerId, 'Hello world!')
+  test('should encrypt/decrypt AsymmetricallyEncryptedMessage simple text', async () => {
+    const ciphered = peer1.encrypt(peer2.peerId, 'Hello world!')
     expect(ciphered).toBeDefined()
-    const decrypted = peer2.decryptWithPublicKey(peer1.peerId, ciphered)
+    const decrypted = ciphered.decrypt(peer2, peer1.peerId)
     expect(decrypted).toEqual('Hello world!')
   })
 
-  test('should encryptWithPublicKey object', async () => {
+  test('should encrypt/decrypt SymmetricallyEncryptedMessage object', async () => {
     const obj = {
       endpoint: 'https://example.com/endpoint',
       keys: {
@@ -94,43 +94,46 @@ describe('SecureCommunicationKit', () => {
         p256dh: 'p256dh'
       }
     }
-    const ciphered = SecureCommunicationKey.encryptWithRelay(peer2.peerId, JSON.stringify(obj))
+    const ciphered = SecureCommunicationKey.encrypt(peer2.peerId, obj)
     expect(ciphered).toBeDefined()
-    const decrypted = JSON.parse(peer2.decryptFromRelay(ciphered))
+    const decrypted = ciphered.decrypt(peer2)
     expect(decrypted).toEqual(obj)
   })
 
   test('should encrypt for and from relay', async () => {
     const aMessage = 'Hello world!'
-    const relayMessage = SecureCommunicationKey.encryptWithRelay(peer2.peerId, aMessage)
+    const relayMessage = SecureCommunicationKey.encrypt(peer1.peerId, aMessage)
     expect(relayMessage).toBeDefined()
-    const received = peer2.decryptFromRelay(relayMessage)
+    const received = relayMessage.decrypt(peer1)
     expect(received).toEqual(aMessage)
   })
   test('should encrypt for and from relay long message', async () => {
     const aMessage = 'Hello world!'.repeat(2522)
-    const relayMessage = SecureCommunicationKey.encryptWithRelay(peer2.peerId, aMessage)
+    const relayMessage = SecureCommunicationKey.encrypt(peer2.peerId, aMessage)
     expect(relayMessage).toBeDefined()
-    const received = peer2.decryptFromRelay(relayMessage)
+    const received = peer2.decryptSym(relayMessage)
     expect(received).toEqual(aMessage)
   })
   test('should fail to decrypt with wrong public key', async () => {
-    const ciphered = peer1.encryptWithPublicKey(peer2.peerId, 'Hello world!')
+    const ciphered = peer1.encrypt(peer2.peerId, 'Hello world!')
     expect(ciphered).toBeDefined()
     const wrongPublicKey = await SecureCommunicationKey.create()
-    expect(() => peer2.decryptWithPublicKey(wrongPublicKey.peerId, ciphered)).toThrow('')
+    expect(() => peer2.decrypt(wrongPublicKey.peerId, ciphered)).toThrow('')
   })
 
   test('should fail to decrypt from invalid relay message', async () => {
-    expect(() => peer2.decryptFromRelay({ cipherB64: '1313123', encryptedKeyB64: '23232344', nonceB64: '232323232' })).toThrow('')
+    expect(() => peer2.decryptSym<any>(new SymmetricallyEncryptedMessage('1313123', '23232344', '232323232'))).toThrow('')
   })
 
   test('should fail to decrypt from tampered relay message', async () => {
     const aMessage = 'Hello world!'
-    const relayMessage = SecureCommunicationKey.encryptWithRelay(peer2.peerId, aMessage)
+    let relayMessage = SecureCommunicationKey.encrypt(peer2.peerId, aMessage)
     expect(relayMessage).toBeDefined()
-    relayMessage.cipherB64 = relayMessage.cipherB64.substring(2) // Tamper the cipher
-    expect(() => peer2.decryptFromRelay(relayMessage)).toThrow('')
+    // Tamper the cipher
+
+    relayMessage = new SymmetricallyEncryptedMessage(relayMessage.nonceB64, relayMessage.cipherB64, relayMessage.cipherB64.substring(2))
+
+    expect(() => peer2.decryptSym(relayMessage)).toThrow('')
   })
 
   describe('AsymmetricallyEncryptedMessage over secure Channel', () => {
@@ -147,19 +150,19 @@ describe('SecureCommunicationKit', () => {
     })
 
     test('should AsymmetricallyEncryptedMessage from message', async () => {
-      const encryptedMessage: AsymmetricallyEncryptedMessage =
-      initiated.secureChannel.encryptMessage(message)
+      const encryptedMessage: AsymmetricallyEncryptedMessage<string> =
+      initiated.secureChannel.encrypt(message)
       expect(encryptedMessage).toBeDefined()
       expect(encryptedMessage).toBeDefined()
       expect(encryptedMessage).not.toEqual(message)
     })
     describe('Decrypt EncryptedMessage', () => {
-      let encryptedMessage: AsymmetricallyEncryptedMessage
+      let encryptedMessage: AsymmetricallyEncryptedMessage<string>
       beforeEach(async () => {
-        encryptedMessage = initiated.secureChannel.encryptMessage(message)
+        encryptedMessage = initiated.secureChannel.encrypt(message)
       })
       test('should decryptMessage', async () => {
-        const decryptedMessage = initiated.secureChannel.decryptMessage(
+        const decryptedMessage = initiated.secureChannel.decrypt(
           encryptedMessage
         )
         expect(decryptedMessage).toBeDefined()
@@ -199,8 +202,8 @@ describe('SecureCommunicationKit', () => {
         ).sharedSecret
 
         expect(sharedSecret).toEqual(initiated.secureChannel.sharedSecret)
-        const decrypted = new SecureChannel(initiated.secureChannel.sharedSecret).decryptMessage(
-          initiated.secureChannel.encryptMessage('Hello'))
+        const decrypted = new SecureChannel(initiated.secureChannel.sharedSecret).decrypt(
+          initiated.secureChannel.encrypt('Hello'))
         expect(decrypted).toEqual('Hello')
       })
 

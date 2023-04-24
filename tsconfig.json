@@ -1,6 +1,12 @@
 {
   //used by jest 
   "compilerOptions": {
+    "lib": [
+      "DOM",
+      "DOM.Iterable",
+      "ESNext",
+      "WebWorker"
+    ],
     // "target": "es2017",
     // "module": "commonjs",
     "resolveJsonModule": true,

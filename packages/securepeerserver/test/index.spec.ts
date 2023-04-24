@@ -22,7 +22,7 @@ describe('SecureExpressPeerServer', () => {
   let serverKey: SecureCommunicationKey
   let clientKey: SecureCommunicationKey
   let peerServer: (express.Express & PeerServerEvents) | null
-  let initiatedHandshake: { sharedSecret: Uint8Array, handshake: EncryptedHandshake }
+  let initiatedHandshake: { secureChannel: SecureChannel, handshake: EncryptedHandshake }
 
   let server: Server<typeof IncomingMessage, typeof ServerResponse>
   beforeAll((done) => {
@@ -85,10 +85,10 @@ describe('SecureExpressPeerServer', () => {
   test('peer with valid welcome', async () => {
     const token: string = JSON.stringify(initiatedHandshake.handshake)
     // expect a welcome message to be sent, encrypted with the shared secret
-    const sendMock = jest.fn(async (encryptedWelcome: AsymmetricallyEncryptedMessage) => {
+    const sendMock = jest.fn(async (encryptedWelcome: AsymmetricallyEncryptedMessage<string>) => {
       expect(encryptedWelcome).toBeDefined()
-      const decryptedWelcome = new SecureChannel(initiatedHandshake.sharedSecret)
-        .decryptMessage(encryptedWelcome)
+      const decryptedWelcome = new SecureChannel(initiatedHandshake.secureChannel.sharedSecret)
+        .decrypt(encryptedWelcome)
 
       expect(decryptedWelcome).toBeDefined()
       // eslint-disable-next-line @typescript-eslint/restrict-template-expressions
