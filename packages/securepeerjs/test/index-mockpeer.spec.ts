@@ -33,6 +33,7 @@ describe('SecurePeerJS', () => {
       peer2.on('open', (id: string) => {
         console.info('peer connected', peer2, id)
       })
+      // TODO place done inside open?
       done()
     })
   })

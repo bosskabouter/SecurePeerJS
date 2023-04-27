@@ -1,7 +1,7 @@
 
 import type { PeerServerEvents, IClient } from 'peer'
 import type { IncomingMessage, Server, ServerResponse } from 'http'
-import { createSecureExpressPeerServer, createSecurePeerServer } from '../src'
+import { ExpressSecurePeerServer, SecurePeerServer } from '../src'
 import express, { type Express } from 'express'
 
 import request from 'supertest'
@@ -34,15 +34,13 @@ describe('SecureExpressPeerServer', () => {
         clientKey = clientKeyResult
 
         server = app.listen(TEST_PORT, () => {
-          console.log(`App listening on port ${TEST_PORT}`)
-
-          peerServer = createSecureExpressPeerServer(serverKey, server, {
+          peerServer = ExpressSecurePeerServer(serverKey, server, {
             path: '/myApp',
             port: TEST_PORT
           })
           expect(peerServer).toBeDefined()
 
-          const sps = createSecurePeerServer(serverKey, { port: TEST_PORT + 1 })
+          const sps = SecurePeerServer(serverKey, { port: TEST_PORT + 1 })
           expect(sps).toBeDefined()
 
           app.use('/myApp', peerServer)
@@ -55,7 +53,7 @@ describe('SecureExpressPeerServer', () => {
 
   afterAll((done) => {
     client?.getSocket()?.close()
-    peerServer?.emit('disconnect', client)
+    // peerServer?.emit('disconnect', client)
 
     // server.closeAllConnections()
     server.unref()
@@ -120,6 +118,7 @@ describe('SecureExpressPeerServer', () => {
 
   test('peer with malformed handshake - close socket', async () => {
     const closeMock = jest.fn(() => null)
+    const sendMock = jest.fn()
     const fakeClient: IClient = {
       getId: () => {
         return clientKey.peerId
@@ -129,9 +128,10 @@ describe('SecureExpressPeerServer', () => {
       },
       getSocket: jest.fn(() => ({
         close: closeMock
-      }))
+      })),
+      send: sendMock
     } as unknown as IClient
-
+    expect(sendMock).not.toHaveBeenCalled()
     const emitted = peerServer?.emit('connection', fakeClient)
     expect(emitted).toBeTruthy()
 
@@ -140,6 +140,7 @@ describe('SecureExpressPeerServer', () => {
 
   test('peer with missing handshake - close socket', () => {
     const closeMock = jest.fn(() => null)
+    const sendMock = jest.fn()
     const fakeClient: IClient = {
       getId: () => {
         return '11111'
@@ -149,12 +150,13 @@ describe('SecureExpressPeerServer', () => {
       }, // Empty token to simulate missing handshake
       getSocket: jest.fn(() => ({
         close: closeMock
-      }))
+      })),
+      send: sendMock
     } as unknown as IClient
 
     const emitted = peerServer?.emit('connection', fakeClient)
     expect(emitted).toBeTruthy()
-
+    expect(sendMock).not.toHaveBeenCalled()
     expect(closeMock).toBeCalled()
   })
 
@@ -171,9 +173,7 @@ describe('SecureExpressPeerServer', () => {
     }
 
     const closeMock = jest.fn(() => null)
-    const sendMock = jest.fn((arg: string) => {
-      expect(arg).not.toBeDefined()
-    })
+    const sendMock = jest.fn()
     const fakeClient: IClient = {
       getId: () => {
         return key.peerId
@@ -187,7 +187,7 @@ describe('SecureExpressPeerServer', () => {
 
     const emitted = peerServer?.emit('connection', fakeClient)
     expect(emitted).toBeTruthy()
-
+    expect(sendMock).not.toHaveBeenCalled()
     // Wait for the sendMock function to be called asynchronously
     // await new Promise((resolve) => setTimeout(resolve, 100))
     await new Promise(resolve => setImmediate(resolve).unref())

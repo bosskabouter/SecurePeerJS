@@ -1,6 +1,6 @@
 import './style.css'
 import { setupPeers } from './peers'
-import { SecurePeerKey } from 'securepeerkey'
+import { SecureCommunicationKey } from 'securepeerjs'
 // import { SecurePeerKeyBIP } from 'securepeerjs-bip'
 
 // eslint-disable-next-line @typescript-eslint/no-non-null-assertion
@@ -20,8 +20,8 @@ document.querySelector<HTMLDivElement>('#app')!.innerHTML = `
 // eslint-disable-next-line @typescript-eslint/no-non-null-assertion
 document.querySelector<HTMLButtonElement>('#loadlib')?.addEventListener('click', () => {
   void Promise.all([
-    SecurePeerKey.create(),
-    SecurePeerKey.create()]).then(async ([key1, key2]) => {
+    SecureCommunicationKey.create(),
+    SecureCommunicationKey.create()]).then(async ([key1, key2]) => {
     // eslint-disable-next-line @typescript-eslint/no-non-null-assertion
     await setupPeers(document.querySelector<HTMLButtonElement>('#peer1')!, key1, key2.peerId)
     // eslint-disable-next-line @typescript-eslint/no-non-null-assertion

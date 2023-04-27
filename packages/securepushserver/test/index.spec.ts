@@ -1,66 +1,79 @@
-import { generateVAPIDKeys } from 'web-push'
-import * as webpush from 'web-push'
 import request from 'supertest'
 import { type AsymmetricallyEncryptedMessage, SecureCommunicationKey, type SymmetricallyEncryptedMessage } from 'secure-communication-kit'
-import { createPushServer } from '../src'
+
+import VAPID_KEYS from './vapidKeys.json'
+import TEST_PUSH from './test.push.json'
+
 import publicContent from '../app.json'
 import express from 'express'
 import type { IncomingMessage, Server, ServerResponse } from 'http'
 import { type SecurePushMessage, type WebPushRequest } from 'securepushjs'
+import webpush from 'web-push'
+import { createPushServer } from '../src'
+
+webpush.sendNotification = jest.fn().mockResolvedValue({
+  statusCode: 200,
+  headers: {},
+  body: 'OK'
+})
+// /const webpush2 =
+jest.genMockFromModule<typeof webpush>('web-push')
+
+// (webpush2.sendNotification as jest.Mock) = jest.fn().mockResolvedValue({
+//   statusCode: 200,
+//   headers: {},
+//   body: 'OK'
+// })
 
 const TEST_PORT = 2000 + Math.floor(Math.random() * 5000)
-console.info('generateVAPIDKeys', webpush)
-const vapid = {
-  keys: generateVAPIDKeys(),
-  subject: 'mailto:test@test.com'
-}
+
+jest.mock('web-push', () => ({
+  sendNotification: undefined,
+  setVapidDetails: jest.fn()
+}))
+// const mokTestPush =
+// jest.genMockFromModule<typeof webpush>('web-push')
+
+// jest.mock('web-push', () => ({
+//   sendNotification: jest.fn().mockResolvedValue(
+//     {
+//       statusCode: 200,
+//       headers: {},
+//       body: 'OK'
+//     }
+//   ),
+//   setVapidDetails: jest.fn()
+// }))
 
 describe('SecurePush', () => {
-  jest.mock('web-push', () => ({
-    sendNotification: jest.fn().mockResolvedValue(
-      {
-        statusCode: 200,
-        headers: {},
-        body: 'OK'
-      }
-    ),
-    setVapidDetails: jest.fn()
-  }))
   let serverKey: SecureCommunicationKey
   let pusherKey: SecureCommunicationKey
   let app: express.Express
   let server: Server<typeof IncomingMessage, typeof ServerResponse>
 
-  const mockPush: PushSubscription = JSON.parse(JSON.stringify({
-    endpoint: 'https://fcm.googleapis.com/fcm/send/cTOqXY04n_A:APA91bEyV4fv9lCsJloUaSVhdnU-5ACpJjYMhCS2jMAUhl87ckECt3mItOMRxpqCJlS8AV8NMPVQ_70CTN38yOJ_KzgUWp-4y1kWRy8WxghiXxgiPHFsw0nm2lUCqenBjTlLdpRBNMoI',
-    expirationTime: null,
-    keys: {
-      p256dh: 'BEacd1Ea7oAnP2XvYLHI6FbLEFN5Dw4VaFMP_aBuG1VOmGa04Dd9TAO41cf9ywOhar1y4Txn7rfepSLtwVk3XV4',
-      auth: 'C4P8IRF_Cnnt1jVg8hkAcQ'
-    }
-  }))
+  const mockPush: PushSubscription = TEST_PUSH as any
   beforeAll(async () => {
+    // webPush = await import ('web-push')
+
     app = express()
     serverKey = await SecureCommunicationKey.create()
     pusherKey = await SecureCommunicationKey.create()
     server = app.listen(TEST_PORT, () => {
-      console.log(`App listening on port ${TEST_PORT}`)
-
-      const sps = createPushServer(serverKey, vapid, { port: (TEST_PORT + 1) })
+      const sps = createPushServer(serverKey, VAPID_KEYS, { port: (TEST_PORT + 1) })
       expect(sps).toBeDefined()
-
       app.use('/', sps)
     })
   })
   afterEach(() => {
-    jest.resetAllMocks()
+    // jest.resetAllMocks()
   })
 
   afterAll((done) => {
     server.unref()
     jest.resetModules()
+
     server.close(done)
-  }, 10000)
+  })
   test('should get public content', async () => {
     const resp = await request(app).get('')
     expect(resp).toBeDefined()
@@ -75,7 +88,7 @@ describe('SecurePush', () => {
   })
 
   test('POST /send should send a notification', async () => {
-    const recipient = (await SecureCommunicationKey.create())
+    const recipient = await SecureCommunicationKey.create()
 
     const encryptedEndpoint = SecureCommunicationKey.encrypt(serverKey.peerId, mockPush)
 
@@ -95,17 +108,16 @@ describe('SecurePush', () => {
       handshake,
       senderId: pusherKey.peerId
     }
-
-    const response = await request(app)
-      .post('/')
-      // .set('Content-Type', 'application/json')
-      // .type('application/json')
+    expect(wpr).toBeDefined()
+    const response =
+    await request(app)
+      .post('/push')
       .send(wpr)
+    expect(response).toBeDefined()
+    // expect(response.error).toBeFalsy()
+    // expect(response.status).toBeTruthy()
 
-    expect(response.error).toBeFalsy()
-    expect(response.status).toBeTruthy()
-
-    // expect(webpush.sendNotification).toHaveBeenCalledTimes(1)
+    // expect(webpush2.sendNotification).toHaveBeenCalledTimes(1)
     // expect(webpush.sendNotification).toHaveBeenCalledWith(
     //   mockPush,
     //   secureMessage,

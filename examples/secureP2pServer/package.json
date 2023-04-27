@@ -4,12 +4,13 @@
   "version": "1.0.0",
   "scripts": {
     "build": "tsc",
-    "start": "node out/index.js",
+    "start": "node out/secureP2pServer/src/index.js",
     "dev": "nodemon --watch src -e ts --exec 'npm run build && npm run start'"
   },
   "author": "",
   "license": "ISC",
   "dependencies": {
+    "peer": "^1.0.0",
     "securepeerserver": "file:../../packages/securepeerserver",
     "securepushserver": "file:../../packages/securepushserver"
   },

@@ -12,6 +12,21 @@ describe('SecureCommunicationKit', () => {
     expect(peer2.peerId).toBeDefined()
   })
 
+  describe('keys encrypts for himself', () => {
+    test('Symmetrically', async () => {
+      const key = await SecureCommunicationKey.create()
+      const encrypted = key.encryptAnonym(key.peerId, 'Hello World')
+      const msg = key.decryptSym(encrypted)
+      expect(msg).toBe('Hello World')
+    })
+    test('Asymmetrically', async () => {
+      const key = await SecureCommunicationKey.create()
+      const encrypted = key.encrypt(key.peerId, 'Hello World')
+      const msg = key.decrypt(key.peerId, encrypted)
+      expect(msg).toBe('Hello World')
+    })
+  })
+
   describe('SecureCommunicationKey creation', () => {
     test('should create from a simple string seed value', async () => {
       const seed = 'weak seed value'

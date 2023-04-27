@@ -28,7 +28,8 @@
     "checkJs": true
   },
   "include": [
-    "./src/**/*"
+    "./src/**/*",
+    "../example-config.json"
   ],
   "exclude": [
     "test"

@@ -27,14 +27,17 @@ export interface PushServerConfig {
  * Client cLass with initialization for the given server config and client key. Enables pushing (and receiving) of encrypted messages through the push server.
  */
 export class SecurePusher {
-  constructor (private readonly pushSubscription: PushSubscription, private readonly key: SecureCommunicationKey, private readonly serverConfig: PushServerConfig) {}
+  private readonly postURI
+  constructor (private readonly pushSubscription: PushSubscription, private readonly key: SecureCommunicationKey, private readonly serverConfig: PushServerConfig) {
+    this.postURI = `${serverConfig.host}${serverConfig.path}/push`
+  }
 
   async pushMessage (securePushMessages: SecurePushMessage[]): Promise<boolean> {
     const { secureChannel, handshake } = this.key.initiateHandshake(this.serverConfig.publicKey)
     const encryptedPushMessages = secureChannel.encrypt(securePushMessages)
     const webPushRequest: WebPushRequest = { handshake, encryptedPushMessages, senderId: this.key.peerId }
     return await new Promise((resolve, reject) => {
-      axios.post(this.serverConfig.host, webPushRequest).then(response => { resolve(response.status === 200) }).catch(reject)
+      axios.post(this.postURI, webPushRequest).then(response => { resolve(response.status === 200) }).catch(reject)
     })
   }
 

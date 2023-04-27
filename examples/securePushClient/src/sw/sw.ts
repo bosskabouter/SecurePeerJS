@@ -12,7 +12,6 @@ import {
 
 declare const self: ServiceWorkerGlobalScope
 
-console.info('Registering Simple Example SW')
 self.skipWaiting().catch(console.error)
 clientsClaim()
 

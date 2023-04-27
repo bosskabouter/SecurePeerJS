@@ -19,9 +19,8 @@ export default ({
 }): express.Router => {
   const app = express.Router()
 
-  const PUSH_MAX_BYTES = 4 * 1024
+  const PUSH_MAX_BYTES = config.pushMaxBytes
 
-  // WEB-PUSH VAPID KEYS; `npm run vapid`
   webpush.setVapidDetails(vapid.subject, vapid.keys.publicKey, vapid.keys.privateKey)
 
   app.get('/test', (_request, response) => {
@@ -32,26 +31,21 @@ export default ({
    * Post handler for push requests with body containing
    * `Array<{ destination: SymmetricallyEncryptedMessage, payload: SymmetricallyEncryptedMessage }>`
    */
-  app.post(config.path, (request, response) => {
-    try {
-      response.send(sendAll(request.body as WebPushRequest).catch(e => { throw (e) }))
-    } catch (error) {
-      response.emit('error', error)
-    }
+  app.post('/push', (request, response) => {
+    sendAll(request.body as WebPushRequest).then((res) => { response.status(200).send(res) }).catch(response.status(500).send)
   })
 
   async function sendAll (wpr: WebPushRequest): Promise<number[]> {
     const results = new Array<Promise<number>>()
     const pushes = key.receiveHandshake(wpr.senderId, wpr.handshake).decrypt(wpr.encryptedPushMessages)
     pushes.forEach((spm) => {
-      console.info(spm)
-      results.push(sendOne(spm.encryptedEndpoint, spm.encryptedPayload))
+      results.push(sendOne(spm.encryptedEndpoint as any, spm.encryptedPayload))
     })
     return await Promise.all(results)
   }
 
-  async function sendOne (destination: SymmetricallyEncryptedMessage<PushSubscription>, payload: SymmetricallyEncryptedMessage<any>): Promise<number> {
-    const subscription: PushSubscription = key.decryptSym(destination)
+  async function sendOne (destination: SymmetricallyEncryptedMessage<webpush.PushSubscription>, payload: SymmetricallyEncryptedMessage<any>): Promise<number> {
+    const subscription: webpush.PushSubscription = key.decryptSym(destination)
 
     const payloadBytes = Buffer.from(JSON.stringify(payload))
 
@@ -60,8 +54,10 @@ export default ({
       )
       return (HTTP_ERROR_PUSH_TOO_BIG)
     }
-    console.info('subscription', subscription)
-    return (await webpush.sendNotification(subscription as unknown as webpush.PushSubscription, payloadBytes, { TTL: 1000 * 60 })).statusCode
+    console.info('webpush.sendNotification', webpush.sendNotification)
+
+    const res = await webpush.sendNotification(subscription as unknown as webpush.PushSubscription, payloadBytes, { TTL: 1000 * 60 })
+    return res.statusCode
   }
 
   return app

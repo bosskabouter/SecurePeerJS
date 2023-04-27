@@ -1,0 +1,17 @@
+{
+    "testConfig": {
+        "server": {
+            "port": 9003,
+            "seed": "a very Strong Server Key 1234",
+            "publicKey": "1a00d6e266b861c19179e4ff4f492b7e3ba095d6f0d57100a7dcd40b6a2c6a17",
+            "SEC_PUSH_CTX": "/securePush",
+            "SEC_PEER_CTX": "/securePeer"
+        },
+        "vapid": {
+            "explainer": "Keys can be generated with webpush.generateVapidKeys()",
+            "publicKey": "BEUo6k6HBBBHusLq6BOGYlpnr9lcq-9yuiKee0XpbkNPMQm20m7KPbz_eJz2nggEmnk9QkL2KxubYpHP-CY_pAg",
+            "privateKey": "YavzDUJGygLRqp8IpI1MMmZBL2wDSJG195O97GAzDg8",
+            "subject": "mailto:test@testers.com"
+        }
+    }
+}

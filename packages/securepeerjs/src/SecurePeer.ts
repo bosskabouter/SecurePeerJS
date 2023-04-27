@@ -6,11 +6,18 @@ import { type SecureChannel, type SecureCommunicationKey } from '.'
  * A SecurePeer has a guaranteed verified identity and establishes encrypted P2P communication over trusted connections.
  */
 export class SecurePeer extends Peer {
+  /**
+   * Creates a SecurePeer with given key. It connects to a peerserver, just like a normal peer. If a serverPublicKey is given, it will use it to initiate a secure handshake. If no serverPublicKey is given, it will connect to any normal peerserver.
+   * @param key of the peer
+   * @param options normal peerjs connection options. token will be used to pass the secure
+   *  @see PeerJSOption
+   * @param serverPublicKey optional key to initiate a secure handshake with. If none was given, the peer can connect to any normal peerserver and its identity cannot be guaranteed (other then not being able to communicate with other securePeers)
+   */
   constructor (private readonly key: SecureCommunicationKey, options?: PeerJSOption, public readonly serverPublicKey?: string) {
     let serverSharedSecret: Uint8Array
 
     if (serverPublicKey !== null && serverPublicKey !== undefined) {
-      // expect a secure server
+      // expect a secure server to handshake
       const serverInit = key.initiateHandshake(serverPublicKey)
       options = (serverPublicKey != null)
         ? { ...options, token: JSON.stringify(serverInit.handshake) }
@@ -21,7 +28,7 @@ export class SecurePeer extends Peer {
     super(key.peerId, options)
     super.on('open', (id) => { this.handleOpenServer(id, serverSharedSecret) })
     super.on('connection', this.handleDataConnection)
-    super.on('call', this.handleMediaConnection)
+    super.on('call', this.validateConnection)
     super.on('error', console.error)
   }
 
@@ -40,8 +47,8 @@ export class SecurePeer extends Peer {
   }
 
   /**
-   * Handler for new incoming DataConnections. A SecurePeer closes the socket from any dataConnection with invalid handshake. If valid, a new `SecureLayer` is placed in `dataConnection.metadata.secureLayer`
-   * @param dataConnection
+   * Handler for new incoming DataConnections. A SecurePeer closes the socket from any dataConnection without a valid handshake. A new `SecureLayer` used to communicate with the other peer is placed in `dataConnection.metadata.secureLayer`
+   * @param dataConnection the unencrypted incoming dataConnection
    */
   private handleDataConnection (dataConnection: DataConnection): void {
     const secureChannel = this.validateConnection(dataConnection)
@@ -50,24 +57,17 @@ export class SecurePeer extends Peer {
   }
 
   /**
-   * Handler for new incoming MediaConnections. A SecurePeer closes the socket from any mediaConnection with invalid handshake.
-   * @param dataConnection
-   */
-  private handleMediaConnection (mediaConnection: MediaConnection): void {
-    this.validateConnection(mediaConnection)
-  }
-
-  /**
- * Validates all (data and media) incoming connections for a valid handshake in metadata. Connection is closed if not found ur invalid.
- * @param con
- * @returns
+ * Validates all (data and media) incoming connections for a valid handshake in metadata. Connection is closed if not found or invalid.
+ * @param connection
+ * @returns undefined if con.metadata doesn't contain a valid EncryptedHandshake
+ * @see EncryptedHandshake
  */
-  private validateConnection (con: MediaConnection | DataConnection): SecureChannel | undefined {
+  private validateConnection (connection: MediaConnection | DataConnection): SecureChannel | undefined {
     try {
-      return this.key.receiveHandshake(con.peer, con.metadata)
+      return this.key.receiveHandshake(connection.peer, connection.metadata)
     } catch (e: unknown) {
-      con.close()
-      console.warn('Invalid handshake from connection', e, con)
+      connection.close()
+      console.warn('Invalid handshake from connection:', e, connection)
       super.emit('error', new Error('Invalid handshake'))
     }
   }
@@ -78,6 +78,7 @@ export class SecurePeer extends Peer {
    * @param _sharedSecret
    */
   private handleOpenServer (serverAssignedId: string, _sharedSecret: Uint8Array): void {
+    console.info('handleOpenServer: 1', serverAssignedId, _sharedSecret)
     if (serverAssignedId !== this.key.peerId) { throw Error('server assigned different ID') }
     void this.isServerSecure().then(isSecure => {
       console.debug(isSecure ? '🔏 [secure server]' : '🔒 [generic server]')

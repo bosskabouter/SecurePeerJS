@@ -9,11 +9,13 @@ import defaultConfig from './config'
 import { type SecureCommunicationKey } from 'secure-communication-kit'
 export * from 'secure-communication-kit'
 
-function createExpressPushServer (key: SecureCommunicationKey, vapid: {
-  keys: webpush.VapidKeys
-  subject: string },
-server: https.Server | http.Server,
-options?: Partial<IConfig>
+function createExpressPushServer (
+  key: SecureCommunicationKey,
+  vapid: {
+    keys: webpush.VapidKeys
+    subject: string },
+  server: https.Server | http.Server,
+  options?: Partial<IConfig>
 ): Express {
   const app = express()
 

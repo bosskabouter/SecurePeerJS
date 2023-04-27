@@ -2,22 +2,19 @@
   "compilerOptions": {
     "module": "commonjs",
     "target": "es5",
-    "noEmit": false,
-    "outDir": "out",
+    "lib": [
+      "es6"
+    ],
+    "outDir": "out/cjs",
     "resolveJsonModule": true,
-    "exactOptionalPropertyTypes": false,
+    "exactOptionalPropertyTypes": true,
+    "forceConsistentCasingInFileNames": true,
     "declaration": true,
+    "declarationDir": "out",
     "sourceMap": true,
     "esModuleInterop": true,
     "strict": true,
-
-
-
-    "lib": [
-      "es2021"
-    ],
     "skipLibCheck": true,
-    "forceConsistentCasingInFileNames": true,
     "moduleResolution": "node",
     "allowUnusedLabels": false,
     "allowUnreachableCode": false,

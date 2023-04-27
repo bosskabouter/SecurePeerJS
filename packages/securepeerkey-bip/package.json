@@ -3,16 +3,12 @@
   "version": "1.0.1",
   "types": "out/index.d.ts",
   "source": "src/index.ts",
-  "main": "out/index.js",
-  "module": "out/index.js",
+  "main": "out/cjs/index.js",
+  "module": "out/esm/index.js",
   "type": "commonjs",
   "exports": {
     ".": {
-      "require": "./out/index.js",
-      "import": "./out/esm/index.js"
-    },
-    "./out/index.js": {
-      "require": "./out/index.js",
+      "require": "./out/cjs/index.js",
       "import": "./out/esm/index.js"
     }
   },

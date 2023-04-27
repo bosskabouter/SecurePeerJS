@@ -70,6 +70,32 @@ export class SecureCommunicationKey {
     return new this({ signKeyPair, boxKeyPair })
   }
 
+  static fromJson (json: string): SecureCommunicationKey {
+    const parsed = JSON.parse(json)
+    const signPublicKey = Uint8Array.from(parsed.signKeyPair.publicKey)
+    const signPrivateKey = Uint8Array.from(parsed.signKeyPair.privateKey)
+    const boxPublicKey = Uint8Array.from(parsed.boxKeyPair.publicKey)
+    const boxPrivateKey = Uint8Array.from(parsed.boxKeyPair.privateKey)
+    const keySet: KeySet = {
+      signKeyPair: { privateKey: signPrivateKey, publicKey: signPublicKey, keyType: parsed.signKeyPair.keyType },
+      boxKeyPair: { privateKey: boxPrivateKey, publicKey: boxPublicKey, keyType: parsed.boxKeyPair.keyType }
+    }
+
+    return new SecureCommunicationKey(keySet)
+  }
+
+  toJSON (): string {
+    const signPublicKey = Array.from(this.keySet.signKeyPair.publicKey)
+    const signPrivateKey = Array.from(this.keySet.signKeyPair.privateKey)
+    const boxPublicKey = Array.from(this.keySet.boxKeyPair.publicKey)
+    const boxPrivateKey = Array.from(this.keySet.boxKeyPair.privateKey)
+    const keySet = {
+      signKeyPair: { publicKey: signPublicKey, privateKey: signPrivateKey, keyType: this.keySet.signKeyPair.keyType },
+      boxKeyPair: { publicKey: boxPublicKey, privateKey: boxPrivateKey, keyType: this.keySet.boxKeyPair.keyType }
+    }
+    return JSON.stringify(keySet)
+  }
+
   /**
    * @see create to initialize key
    */
@@ -79,7 +105,11 @@ export class SecureCommunicationKey {
    * @returns Public identifier of this peer, based on the urlsafe base64 value of public box key (asymmetric encryption key - x25519). Used to initiate a secure channel and establish a shared secret through hybrid encryption/verification.
    */
   get peerId (): string {
-    return sodium.to_base64(this.keySet.boxKeyPair.publicKey, sodium.base64_variants.URLSAFE)
+    return sodium.to_hex(this.keySet.boxKeyPair.publicKey)
+  }
+
+  static convertPeerId (publicKey: string): Uint8Array {
+    return sodium.from_hex(publicKey)
   }
 
   /**
@@ -96,7 +126,7 @@ export class SecureCommunicationKey {
     const encryptedSharedSecret = sodium.crypto_box_easy(
       sharedSecret,
       nonce,
-      sodium.from_base64(peerId, sodium.base64_variants.URLSAFE), // pubkey
+      SecureCommunicationKey.convertPeerId(peerId), // pubkey
       this.keySet.boxKeyPair.privateKey
     )
 
@@ -157,7 +187,7 @@ export class SecureCommunicationKey {
     const sharedKeyBytes = sodium.crypto_box_open_easy(
       sharedSecret,
       nonce,
-      sodium.from_base64(peerId, sodium.base64_variants.URLSAFE),
+      SecureCommunicationKey.convertPeerId(peerId),
       this.keySet.boxKeyPair.privateKey
     )
     return new SecureChannel(sharedKeyBytes)
@@ -171,7 +201,7 @@ In a normal SecureMessage, the public key of the sender is needed because it is 
    */
   encrypt<T> (publicKey: string, object: T): AsymmetricallyEncryptedMessage<T> {
     const nonce = sodium.randombytes_buf(sodium.crypto_box_NONCEBYTES)
-    const cipherB64 = sodium.to_base64(sodium.crypto_box_easy(JSON.stringify(object), nonce, sodium.from_base64(publicKey, sodium.base64_variants.URLSAFE), this.keySet.boxKeyPair.privateKey))
+    const cipherB64 = sodium.to_base64(sodium.crypto_box_easy(JSON.stringify(object), nonce, SecureCommunicationKey.convertPeerId(publicKey), this.keySet.boxKeyPair.privateKey))
     return new AsymmetricallyEncryptedMessage<T>(sodium.to_base64(nonce), cipherB64)
   }
 
@@ -186,7 +216,7 @@ In a normal SecureMessage, the public key of the sender is needed because it is 
       sodium.crypto_box_open_easy(
         sodium.from_base64(encryptedMessage.cipherB64),
         sodium.from_base64(encryptedMessage.nonceB64),
-        sodium.from_base64(originPublicKey, sodium.base64_variants.URLSAFE),
+        SecureCommunicationKey.convertPeerId(originPublicKey),
         this.keySet.boxKeyPair.privateKey
       ))
     )
@@ -220,7 +250,7 @@ In a normal SecureMessage, the public key of the sender is needed because it is 
     const cipherB64 = sodium.to_base64(sodium.crypto_secretbox_easy(JSON.stringify(obj), nonce, sharedSecret))
 
     // Encrypt the symmetric key with RSA public key of the relay server
-    const encryptedKeyB64 = sodium.to_base64(sodium.crypto_box_seal(sharedSecret, sodium.from_base64(publicKey, sodium.base64_variants.URLSAFE)))
+    const encryptedKeyB64 = sodium.to_base64(sodium.crypto_box_seal(sharedSecret, SecureCommunicationKey.convertPeerId(publicKey)))
     return new SymmetricallyEncryptedMessage(sodium.to_base64(nonce), cipherB64, encryptedKeyB64)
   }
 

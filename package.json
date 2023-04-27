@@ -15,12 +15,14 @@
     "test": " NODE_OPTIONS=--experimental-vm-modules jest",
     "prepublish": "npm run build",
     "lint": "eslint .",
-    "build": "npm run build:all",
+    "buildKeyFirst": "cd ./packages/secure-communication-kit && npm run build",
+    "build": "npm run buildKeyFirst && npm run build:all",
     "build:all": "lerna run build --stream --parallel",
-    "start": "concurrently \"npm run dev:client\" \"npm run dev:server\"",
-    
-    "dev:client": "cd ./examples/exampleclient1/ && npm run preview",
-    "dev:server": "cd ./examples/exampleserver/ && npm run start"
+    "start": "concurrently \"npm run dev:client1\" \"npm run dev:client2\" \"npm run dev:server\"",
+    "dev:client1": "cd ./examples/securePushClient/ && npm run dev",
+    "dev:client2": "cd ./examples/securePeerClient/ && npm run dev",
+
+    "dev:server": "cd ./examples/secureP2pServer/ && npm run dev"
   },
   "keywords": [
     "peer",

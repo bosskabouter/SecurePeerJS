@@ -1,10 +1,8 @@
-import { SecurePeer } from 'securepeerjs'
-import { type SecurePeerKey } from 'securepeerkey'
-import { type SecureLayer } from 'securepeerjs'
+import { type SecureCommunicationKey, SecurePeer, type SecureLayer } from 'securepeerjs'
 
-const SERVER_PUB_ID = '076d121e9c1b8d8b6478414804806365af8a1bee8cfb4058959a8ce209054a46'
+const SERVER_PUB_ID = '1a00d6e266b861c19179e4ff4f492b7e3ba095d6f0d57100a7dcd40b6a2c6a17'
 
-export async function setupPeers (element: HTMLButtonElement, key: SecurePeerKey, otherPeerId: string): Promise<any> {
+export async function setupPeers (element: HTMLButtonElement, key: SecureCommunicationKey, otherPeerId: string): Promise<any> {
   let counter = 0
   let isSecure: boolean
   let secureLayer: SecureLayer | undefined
@@ -14,11 +12,10 @@ export async function setupPeers (element: HTMLButtonElement, key: SecurePeerKey
   const securePeer = new SecurePeer(key, {
     host: document.location.hostname,
     path: '/',
-    port: 9000,
+    port: 9001,
     debug: 0
   }, SERVER_PUB_ID)
-  securePeer.on('open', (id) => {
-    console.debug('Peer Connected with ID:', id)
+  securePeer.on('open', (_id) => {
     void securePeer.isServerSecure().then(is => {
       isSecure = is
     }).catch(console.error)

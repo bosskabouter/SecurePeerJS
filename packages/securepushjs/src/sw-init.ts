@@ -1,29 +1,28 @@
-import { type SecureCommunicationKey, type SymmetricallyEncryptedMessage } from '.'
+import { SecureCommunicationKey, type SymmetricallyEncryptedMessage } from '.'
 
 let key: SecureCommunicationKey
 
+export async function postCommunicationKey (key: SecureCommunicationKey): Promise<void> {
+  navigator.serviceWorker.controller?.postMessage({ type: 'UPDATE_KEY', key: key.toJSON() })
+}
+
 export function initSecurePush (sw: ServiceWorkerGlobalScope, customHandleSecurePush?: (notification: NotificationOptions) => void): void {
-  console.info('initSecurePush', sw, key)
   sw.addEventListener('message', handleMessage)
   sw.addEventListener('notificationclick', handleNotificationclick, false)
   sw.addEventListener('push', handlePush)
 
   function handleMessage (event: ExtendableMessageEvent): void {
-    console.debug('SW received message event!', event)
     if (event.data.type === 'SKIP_WAITING') {
       // This allows the web app to trigger skipWaiting
       sw.skipWaiting().catch(console.error)
     } else if (event.data.type === 'UPDATE_KEY') {
-      key = event.data.key
-      console.info('postmessage key', key)
+      key = SecureCommunicationKey.fromJson(event.data.key)
     }
   }
 
   function handleNotificationclick (event: NotificationEvent): void {
-    console.debug('Clicked pushed notification', event)
     event.notification.close()
 
-    console.log('self.location.origin', self.location.origin)
     event.waitUntil(
 
       sw.clients.matchAll({ type: 'window' }).then((clientsArr) => {
@@ -44,7 +43,10 @@ export function initSecurePush (sw: ServiceWorkerGlobalScope, customHandleSecure
   }
 
   function handlePush (pushEvent: PushEvent): void {
-    console.info('Pushing with key', key)
+    if (key?.peerId === undefined) {
+      console.warn('No key yet to handle Secure Push Event')
+      return
+    }
     const payload: string = pushEvent.data?.text() ?? ''
     if (payload.length === 0) {
       console.warn('No push data available')
@@ -58,9 +60,7 @@ export function initSecurePush (sw: ServiceWorkerGlobalScope, customHandleSecure
       return
     }
 
-    console.debug('Encrypted push data.text', payload)
-
-    let options = relayedMessage.decrypt(key)
+    let options = key.decryptSym(relayedMessage)
 
     const actionOpen = {
       title: 'Open',
@@ -82,10 +82,6 @@ export function initSecurePush (sw: ServiceWorkerGlobalScope, customHandleSecure
   }
 }
 
-export async function postCommunicationKey (comKey: SecureCommunicationKey): Promise<void> {
-  const key = JSON.stringify(comKey)
-  navigator.serviceWorker.controller?.postMessage({ type: 'UPDATE_KEY', key })
-}
 interface PeriodicSyncManager {
   register: (tag: string, options?: { minInterval: number }) => Promise<void>
 }
@@ -99,11 +95,7 @@ declare global {
 export function registerSW (): void {
   window.addEventListener('load', () => {
     if ('serviceWorker' in navigator) {
-      console.info('initializing Secure PushSW')
-      //   void navigator.serviceWorker.register('../sw.js')
-
       if (navigator.serviceWorker.controller != null) {
-        console.info('navigator.serviceWorker.controller', navigator.serviceWorker.controller)
         navigator.serviceWorker.addEventListener('controllerchange', () => {
           // window.location.reload()
         })
