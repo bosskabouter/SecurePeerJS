@@ -2,10 +2,6 @@ import { SecureCommunicationKey, type SymmetricallyEncryptedMessage } from '.'
 
 let key: SecureCommunicationKey
 
-export async function postCommunicationKey (key: SecureCommunicationKey): Promise<void> {
-  navigator.serviceWorker.controller?.postMessage({ type: 'UPDATE_KEY', key: key.toJSON() })
-}
-
 export function initSecurePush (sw: ServiceWorkerGlobalScope, customHandleSecurePush?: (notification: NotificationOptions) => void): void {
   sw.addEventListener('message', handleMessage)
   sw.addEventListener('notificationclick', handleNotificationclick, false)

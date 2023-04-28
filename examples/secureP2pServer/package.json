@@ -4,7 +4,9 @@
   "version": "1.0.0",
   "scripts": {
     "build": "tsc",
+    "postinstall": "npm run vapid",
     "start": "node out/secureP2pServer/src/index.js",
+    "vapid": "../../node_modules/.bin/web-push generate-vapid-keys --json > vapidKeys.test.json",
     "dev": "nodemon --watch src -e ts --exec 'npm run build && npm run start'"
   },
   "author": "",

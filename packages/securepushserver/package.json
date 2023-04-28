@@ -7,7 +7,7 @@
   "source": "src/index.ts",
   "scripts": {
     "build": "parcel build",
-    "vapid": "../../node_modules/.bin/web-push generate-vapid-keys",
+    "vapid": "../../node_modules/.bin/web-push generate-vapid-keys --json > vapidKeys.test.json",
     "dev": "nodemon --watch src -e ts --exec 'npm run build'",
     "test": "jest"
   },

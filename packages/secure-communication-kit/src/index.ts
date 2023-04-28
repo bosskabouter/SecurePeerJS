@@ -320,3 +320,5 @@ export class SecureChannel {
     return JSON.parse(sodium.to_string(decryptedBytes))
   }
 }
+
+export default (): void => { console.log(JSON.stringify(SecureCommunicationKey.create())) }

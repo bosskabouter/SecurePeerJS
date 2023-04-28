@@ -25,13 +25,16 @@ precacheAndRoute(self.__WB_MANIFEST)
 
 cleanupOutdatedCaches()
 
-initSecurePush(self)
+initSecurePush(self, console.info)
 
 self.clients.matchAll().then((clients) => {
   clients.forEach((client) => {
     client.postMessage({ message: 'Hello from the service worker!' })
   })
 }).catch(console.error)
+
+// self.addEventListener('push', console.info)
 self.addEventListener('message', (event) => {
+  console.info(event)
   if (event.data !== undefined && event.data.type === 'SKIP_WAITING') { self.skipWaiting().catch(console.error) }
 })

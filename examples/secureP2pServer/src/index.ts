@@ -10,6 +10,9 @@ import http from 'http'
 import cors from 'cors'
 
 import TEST_VALUES from '../../example-config.json'
+
+import TEST_VAPID_KEYS from '../vapidKeys.test.json'
+
 const PORT = TEST_VALUES.testConfig.server.port
 
 const app = express()
@@ -22,7 +25,7 @@ const server = http.createServer(app)
 SecureCommunicationKey.create(TEST_VALUES.testConfig.server.seed).then((key) => {
   app.use(cors())
 
-  const securePushServer = createExpressPushServer(key, { keys: TEST_VALUES.testConfig.vapid, subject: TEST_VALUES.testConfig.vapid.subject }, server, { path: TEST_VALUES.testConfig.server.SEC_PUSH_CTX })
+  const securePushServer = createExpressPushServer(key, { keys: TEST_VAPID_KEYS, subject: TEST_VALUES.testConfig.vapid.subject }, server, { path: TEST_VALUES.testConfig.server.SEC_PUSH_CTX })
 
   app.use(securePushServer)
 

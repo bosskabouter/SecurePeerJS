@@ -7,6 +7,9 @@
   "main": "out/cjs/index.js",
   "module": "out/esm/index.js",
   "type": "commonjs",
+  "bin": {
+    "generateKey": "./out/index.js"
+  },
   "exports": {
     ".": {
       "require": "./out/cjs/index.js",
@@ -36,7 +39,7 @@
   },
   "scripts": {
     "build": "tsc & tsc --module es2015 --outDir out/esm",
-    "coverage":"jest --coverage",
+    "coverage": "jest --coverage",
     "dev": "tsc --watch & tsc --watch  --module es2015 --outDir out/esm",
     "test": "jest"
   },

@@ -46,16 +46,12 @@ export default ({
 
   async function sendOne (destination: SymmetricallyEncryptedMessage<webpush.PushSubscription>, payload: SymmetricallyEncryptedMessage<any>): Promise<number> {
     const subscription: webpush.PushSubscription = key.decryptSym(destination)
-
     const payloadBytes = Buffer.from(JSON.stringify(payload))
-
     if (payloadBytes.length >= PUSH_MAX_BYTES) {
       console.warn(`Message too big. Refusing push. ${payloadBytes.length}kb`
       )
       return (HTTP_ERROR_PUSH_TOO_BIG)
     }
-    console.info('webpush.sendNotification', webpush.sendNotification)
-
     const res = await webpush.sendNotification(subscription as unknown as webpush.PushSubscription, payloadBytes, { TTL: 1000 * 60 })
     return res.statusCode
   }
