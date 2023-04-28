@@ -1,5 +1,6 @@
-import { // createSecureExpressPeerServer,
-  SecureCommunicationKey, SecurePeerServer
+import {
+  SecureCommunicationKey,
+  ExpressSecurePeerServer
 } from 'securepeerserver'
 import { createExpressPushServer } from 'securepushserver'
 
@@ -9,15 +10,11 @@ import http from 'http'
 import cors from 'cors'
 
 import TEST_VALUES from '../../example-config.json'
-import {
-// ExpressPeerServer,
-// PeerServer
-} from 'peer'
 const PORT = TEST_VALUES.testConfig.server.port
 
 const app = express()
 
-// app.get('/', (_req: Request, res: any) => res.send('Hello secure p2p world!'))
+app.get('/', (_req: Request, res: any) => res.send('Hello secure p2p world!'))
 
 const server = http.createServer(app)
 
@@ -29,31 +26,20 @@ SecureCommunicationKey.create(TEST_VALUES.testConfig.server.seed).then((key) => 
 
   app.use(securePushServer)
 
-  const securePeerServer = SecurePeerServer(
+  const securePeerServer = ExpressSecurePeerServer(
     key,
-    // server,
+    server,
     {
       key: 'securepeerjs',
-      port: PORT + 1,
-      path: '/', // TEST_VALUES.testConfig.server.SEC_PEER_CTX,
-      // corsOptions: { origin: 'http://localhost:5173' },
-      //  host: 'localhost',
+      path: TEST_VALUES.testConfig.server.SEC_PEER_CTX,
       allow_discovery: true,
       proxied: false
     })
 
-  // app.use(securePeerServer)
+  app.use(securePeerServer)
 
-  securePeerServer.on('connection', (c) => { console.info(c) })
   securePeerServer.on('error', (e) => { console.error(e) })
-  app.listen(PORT, () => {
-    console.info('🛡️ Secure P2P Server started!', `Public key: ${key.peerId}`, `listening port: ${PORT.toString()}`)
+  server.listen(PORT, () => {
+    console.info('🛡️ Secure P2P Server started with public key', key.peerId, `listening port: ${PORT.toString()}`)
   })
-
-  app.addListener('error', (e) => { console.error(e.toString()) })
-  server.addListener('error', (e) => { console.error(e.toString()) })
-  // server.addListener('clientError', (e) => { console.error(e) })
-  // server.addListener('connect', (e) => { console.info(e) })
-  // server.addListener('connection', (e) => { console.info(e) })
-  // server.addListener('upgrade', (e) => { console.info(e) })
-}).catch(e => { console.error(e) })
+}).catch(console.error)

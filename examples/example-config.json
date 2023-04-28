@@ -1,7 +1,7 @@
 {
     "testConfig": {
         "server": {
-            "port": 9003,
+            "port": 9006,
             "seed": "a very Strong Server Key 1234",
             "publicKey": "1a00d6e266b861c19179e4ff4f492b7e3ba095d6f0d57100a7dcd40b6a2c6a17",
             "SEC_PUSH_CTX": "/securePush",

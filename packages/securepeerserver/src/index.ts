@@ -2,9 +2,11 @@
 import type { Server as HttpsServer } from 'https'
 import type { Server as HttpServer } from 'http'
 import type { Express } from 'express'
-import type { IClient, IConfig, PeerServerEvents } from 'peer'
+import {
+  type IClient, type IConfig,
+  type PeerServerEvents, PeerServer, ExpressPeerServer
+} from 'peer'
 
-import { PeerServer, ExpressPeerServer } from 'peer'
 import { type SecureCommunicationKey } from 'secure-communication-kit'
 
 export * from 'secure-communication-kit'
@@ -23,8 +25,7 @@ export function ExpressSecurePeerServer (
   options?: Partial<IConfig>
 ): Express & PeerServerEvents {
   return initialize(
-    ExpressPeerServer(server, // disableGenerateClientId
-      options),
+    ExpressPeerServer(server, disableGenerateClientId(options)),
     serverKey
   )
 }
@@ -56,8 +57,8 @@ export function SecurePeerServer (
  */
 const disableGenerateClientId = (config?: Partial<IConfig>): Partial<IConfig> => {
   return {
-    ...config//,
-    // generateClientId: (): string => { return  }
+    ...config,
+    generateClientId: (): string => { return 'use_a_SecurePeerKey' }
   }
 }
 
@@ -74,22 +75,12 @@ function initialize (
   serverKey: SecureCommunicationKey
 ): Express & PeerServerEvents {
   peerServer.on('connection', (client: IClient) => {
-    console.debug('new connection from', client.getId())
-    const peerId = client.getId()
     try {
-      client.send(serverKey.receiveHandshake(peerId, JSON.parse(client.getToken())).encrypt(`welcome ${peerId}`))
-    } catch (error) {
-      // client.send('receiveHandshake error:' + (error as string))
+      serverKey.receiveHandshake(client.getId(), JSON.parse(client.getToken()))
+    } catch (error: any) {
       client.getSocket()?.close()
-      console.warn('error', error)
-      // peerServer.emit('invalid-handshake', peerId)
+      console.warn('Invalid handshake: ', error.toString())
     }
   })
-
-  peerServer.on('error', (e) => { console.warn(e) })
-  // peerServer.on('connection', (c) => { console.debug(c) })
-  // peerServer.on('message', (m) => { console.debug(m) })
-  // peerServer.on('disconnect', (c) => { console.debug(c) })
-
   return peerServer
 }

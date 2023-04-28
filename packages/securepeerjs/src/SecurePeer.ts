@@ -13,20 +13,18 @@ export class SecurePeer extends Peer {
    *  @see PeerJSOption
    * @param serverPublicKey optional key to initiate a secure handshake with. If none was given, the peer can connect to any normal peerserver and its identity cannot be guaranteed (other then not being able to communicate with other securePeers)
    */
-  constructor (private readonly key: SecureCommunicationKey, options?: PeerJSOption, public readonly serverPublicKey?: string) {
-    let serverSharedSecret: Uint8Array
-
+  constructor (private readonly key: SecureCommunicationKey, public readonly serverPublicKey?: string, options?: PeerJSOption) {
+    let secret: Uint8Array
     if (serverPublicKey !== null && serverPublicKey !== undefined) {
       // expect a secure server to handshake
       const serverInit = key.initiateHandshake(serverPublicKey)
-      options = (serverPublicKey != null)
-        ? { ...options, token: JSON.stringify(serverInit.handshake) }
-        : options
-      serverSharedSecret = serverInit.secureChannel.sharedSecret
+      options = { ...options, token: JSON.stringify(serverInit.handshake) }
+      secret = serverInit.secureChannel.sharedSecret
     }
 
     super(key.peerId, options)
-    super.on('open', (id) => { this.handleOpenServer(id, serverSharedSecret) })
+
+    super.on('open', (id) => { this.handleOpenServer(id, secret) })
     super.on('connection', this.handleDataConnection)
     super.on('call', this.validateConnection)
     super.on('error', console.error)
@@ -35,15 +33,20 @@ export class SecurePeer extends Peer {
   /**
    * Creates a new Connection to the peer using given options. A handshake is initiated to establish a common shared secret.
    * @param peerId
-   * @param options
+   * @param options CAUTION: metadata is replaced with handshake
    * @returns
    */
+  // override connect (peerId: string, options?: PeerConnectOption): DataConnection {
+  //   const initiatedHandShake = this.key.initiateHandshake(peerId)
+  //   const conn = super.connect(peerId, { ...options, metadata: initiatedHandShake.handshake })
+  //   conn.metadata.secureLayer = new SecureLayer(initiatedHandShake.secureChannel, conn)
+  //   return conn
+  // }
+
   connectSecurely (peerId: string, options?: PeerConnectOption): SecureLayer {
     const initiatedHandShake = this.key.initiateHandshake(peerId)
-    options = { ...options, metadata: initiatedHandShake.handshake }
-    const conn = super.connect(peerId, options)
-    const secureLayer = new SecureLayer(initiatedHandShake.secureChannel, conn)
-    return secureLayer
+    const conn = super.connect(peerId, { ...options, metadata: initiatedHandShake.handshake })
+    return new SecureLayer(initiatedHandShake.secureChannel, conn)
   }
 
   /**
@@ -52,8 +55,10 @@ export class SecurePeer extends Peer {
    */
   private handleDataConnection (dataConnection: DataConnection): void {
     const secureChannel = this.validateConnection(dataConnection)
-    secureChannel !== undefined && (dataConnection.metadata.secureLayer = new SecureLayer(
-      secureChannel, dataConnection))
+    if (secureChannel !== undefined) {
+      dataConnection.metadata.secureLayer = new SecureLayer(
+        secureChannel, dataConnection)
+    }
   }
 
   /**
@@ -77,20 +82,18 @@ export class SecurePeer extends Peer {
    * @param serverAssignedId
    * @param _sharedSecret
    */
-  private handleOpenServer (serverAssignedId: string, _sharedSecret: Uint8Array): void {
-    console.info('handleOpenServer: 1', serverAssignedId, _sharedSecret)
+  private handleOpenServer (serverAssignedId: string, sharedSecret: Uint8Array): void {
     if (serverAssignedId !== this.key.peerId) { throw Error('server assigned different ID') }
-    void this.isServerSecure().then(isSecure => {
-      console.debug(isSecure ? '🔏 [secure server]' : '🔒 [generic server]')
-    })
   }
 
   /**
-   * Tests if the current connecting server accepts any random client.
-   * @returns
+   * Tests if the current connecting server accepts a normal (non-secure) peer client.
+   * @returns true if the tested connection was closed.
    */
-  async isServerSecure (): Promise<boolean> {
-    const insecurePeer = new Peer(`${Math.round(Math.random() * 1000000000)}`, super.options)
+  public async isServerSecure (): Promise<boolean> {
+    const insecurePeer = new Peer(`${Math.round(Math.random() * 1000000000)}`, {
+      ...super.options, debug: 0, logFunction (logLevel, ...rest) { }
+    })
     return await new Promise(resolve => {
       insecurePeer.on('disconnected', (): void => {
         clearTimeout(connectionTimeout)

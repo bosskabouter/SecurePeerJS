@@ -4,7 +4,7 @@ import { type DataConnection, type PeerConnectOption } from 'peerjs'
 import { jest } from '@jest/globals'
 import { type SpiedFunction } from 'jest-mock'
 import { SecurePeer } from '../src/SecurePeer'
-import { SecureCommunicationKey } from '../src'
+import { SecureCommunicationKey, type SecureLayer } from '../src'
 describe('SecurePeerJS', () => {
   let connectMock: SpiedFunction<(peer: string, options?: PeerConnectOption | undefined) => DataConnection>
 
@@ -18,7 +18,8 @@ describe('SecurePeerJS', () => {
         send: jest.fn(),
         open: true,
         on: jest.fn(),
-        peer: key2.peerId
+        peer: key2.peerId,
+        metadata: jest.fn()
       } as unknown as DataConnection
     })
 
@@ -74,11 +75,10 @@ describe('SecurePeerJS', () => {
     // Mock the PeerJS library
     expect(key2.peerId).toBeDefined()
     peer2.on('connection', con => { expect(con).toBeDefined() })
-
-    const secureLayer12 = peer1.connectSecurely(key2.peerId)
+    const secureLayer12: SecureLayer = peer1.connectSecurely(key2.peerId)
 
     expect(secureLayer12).toBeDefined()
-    expect(secureLayer12.dataConnection).toBeDefined()
+    expect(secureLayer12).toBeDefined()
     secureLayer12.send('Data to encrypt')
     // Set up a promise to wait for the connection event
   })

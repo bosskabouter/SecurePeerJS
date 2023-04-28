@@ -13,7 +13,9 @@
     "peerjs": "^1.4.7",
     "react": "^18.2.0",
     "react-dom": "^18.2.0",
-    "securepeerjs": "file:../../packages/securepeerjs"
+    "secure-communication-kit": "file:../../packages/secure-communication-kit",
+    "securepeerjs": "file:../../packages/securepeerjs",
+    "securepeerkey-bip": "file:../../packages/securepeerkey-bip"
   },
   "devDependencies": {
     "@esbuild-plugins/node-globals-polyfill": "^0.2.3",

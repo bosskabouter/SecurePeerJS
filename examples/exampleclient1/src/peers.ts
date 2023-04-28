@@ -9,12 +9,12 @@ export async function setupPeers (element: HTMLButtonElement, key: SecureCommuni
 
   let decrypted: string | null = null
 
-  const securePeer = new SecurePeer(key, {
+  const securePeer = new SecurePeer(key, SERVER_PUB_ID, {
     host: document.location.hostname,
     path: '/',
     port: 9001,
     debug: 0
-  }, SERVER_PUB_ID)
+  })
   securePeer.on('open', (_id) => {
     void securePeer.isServerSecure().then(is => {
       isSecure = is

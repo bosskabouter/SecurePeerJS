@@ -5,7 +5,7 @@
   "source": "src/index.ts",
   "main": "out/cjs/index.js",
   "module": "out/esm/index.js",
-  "type": "commonjs",
+  "type": "module",
   "exports": {
     ".": {
       "require": "./out/cjs/index.js",
