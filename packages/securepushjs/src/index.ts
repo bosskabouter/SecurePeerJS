@@ -43,13 +43,13 @@ export class SecurePusher extends EventEmitter<SecurePushEvents> {
   private readonly postURI
 
   /**
-   *
+   * Use register to obtain a SecurePusher instance.
    * @param pushSubscription
    * @param key
    * @param serverConfig
    * @see SecurePusher.register
    */
-  private constructor (private readonly pushSubscription: PushSubscription, private readonly key: SecureCommunicationKey, private readonly serverConfig: PushServerConfig) {
+  constructor (private readonly pushSubscription: PushSubscription, private readonly key: SecureCommunicationKey, private readonly serverConfig: PushServerConfig) {
     super()
     this.postURI = `${serverConfig.host}${serverConfig.path}/push`
     this.sharedSubscription = SecureCommunicationKey.encrypt(this.serverConfig.publicKey, this.pushSubscription)
@@ -65,27 +65,12 @@ export class SecurePusher extends EventEmitter<SecurePushEvents> {
     const serviceWorkerRegistration: ServiceWorkerRegistration | undefined = await navigator.serviceWorker.getRegistration()
 
     if (serviceWorkerRegistration !== undefined) {
-      SecurePusher.listenIncoming(serviceWorkerRegistration)
       const subs = await serviceWorkerRegistration.pushManager.subscribe({ applicationServerKey: serverConfig.vapidKey, userVisibleOnly: true })
       if (subs !== undefined) {
         await postCommunicationKey(secureKey)
         return new this(subs, secureKey, serverConfig)
       }
     }
-  }
-
-  private static listenIncoming (registration: ServiceWorkerRegistration): void {
-    console.info('first')
-    registration.addEventListener('push', function (event) {
-      console.log('Push notification received:', event)
-      // const title = 'Push Notification'
-      // event.waitUntil(self.registration.showNotification(title, options))
-    }, { capture: false, passive: false })
-
-    // registration.addEventListener('push', (pushEvent) => {
-    //   console.info(event)
-    //   // if (event.data !== undefined && event.data.type === 'SKIP_WAITING') { self.skipWaiting().catch(console.error) }
-    // })
   }
 
   async pushText (msg: NotificationOptions, peerId: string, shareSubscription: SymmetricallyEncryptedMessage<PushSubscription>): Promise<boolean> {

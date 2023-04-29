@@ -40,14 +40,14 @@ describe('SecurePusher', () => {
       (axios.post as jest.Mock).mockImplementationOnce(async () => await Promise.resolve({ status: 200 }))
 
       const securePusher = new SecurePusher(mockPush, pusherKey, serverConfig)
-      const result = await securePusher.pushMessage([message])
+      const result = await securePusher.pushMessages([message])
       expect(result).toBe(true)
     })
 
     test('should throw an error when axios post fails', async () => {
       (axios.post as jest.Mock).mockRejectedValueOnce(new Error('testError'))
       const securePusher = new SecurePusher(mockPush, pusherKey, serverConfig)
-      await expect(securePusher.pushMessage([])).rejects.toThrow('testError')
+      await expect(securePusher.pushMessages([])).rejects.toThrow('testError')
       expect(axios.post).toHaveBeenCalled()
       expect(axios.post).toHaveReturned()
     })
@@ -56,8 +56,7 @@ describe('SecurePusher', () => {
   describe('getSharedSubscription', () => {
     test('should return the encrypted pushSubscription', () => {
       const securePusher = new SecurePusher(mockPush, pusherKey, serverConfig)
-      const result = securePusher.shareSubscription()
-      expect(result).toBeDefined()
+      expect(securePusher.sharedSubscription).toBeDefined()
     })
   })
 })

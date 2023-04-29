@@ -15,6 +15,7 @@ export default function WebPush (): JSX.Element {
   const [securePusher, setSecurePusher] = useState<SecurePusher | null>()
   const [pushResult, setPushResult] = useState<boolean>()
 
+  const [counter, setCounter] = useState(0)
   useEffect(() => {
     (async () => {
       const secureKey = await SecureCommunicationKey.create()
@@ -33,11 +34,12 @@ export default function WebPush (): JSX.Element {
   )
 
   async function postMessage (): Promise<void> {
+    setCounter(counter + 1)
     secureKey !== undefined && setPushResult(
-      await pushSecureMessage('Hi!', secureKey.peerId))
+      await pushSecureMessage('Hi again: ' + counter.toString(), secureKey.peerId))
   }
 
   async function pushSecureMessage (payload: string, peerId: string): Promise<boolean | undefined> {
-    return securePusher?.pushText({ body: payload, vibrate: [2000, 100, 200, 1000] } satisfies NotificationOptions, peerId, securePusher.sharedSubscription)
+    return await securePusher?.pushText({ body: payload, vibrate: [2000, 100, 200, 1000] } satisfies NotificationOptions, peerId, securePusher.sharedSubscription)
   }
 }

@@ -3,6 +3,6 @@ out/
 *-lock.json
 coverage/
 .parcel-cache/
-examples/examplepushclient/dev-dist/*
 * copy.ts
 examples/securePushClient/my-sw-dir/*
+examples/securePushClient/dev-dist/*
