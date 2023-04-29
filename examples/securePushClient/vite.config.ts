@@ -1,19 +1,19 @@
 import { defineConfig } from 'vite'
 import react from '@vitejs/plugin-react'
 import { VitePWA } from 'vite-plugin-pwa'
-
+import basicSsl from '@vitejs/plugin-basic-ssl'
 // https://vitejs.dev/config/
 export default defineConfig({
-  // server: { https: true },
+  server: { https: true },
   // preview: { https: true },
-  plugins: [react(),
+  plugins: [react(), basicSsl(),
     // https://vite-pwa-org.netlify.app/guide/
     VitePWA({
       strategies: 'injectManifest',
       srcDir: 'my-sw-dir',
       filename: 'sw.js',
-      injectRegister: 'inline',
-      // mode: 'development',
+      injectRegister: 'script',
+      mode: 'development',
       // outDir: 'dist',
 
       // registerType: 'autoUpdate',
@@ -22,7 +22,8 @@ export default defineConfig({
       // },
       devOptions: {
         type: 'module',
-        enabled: true
+        enabled: true,
+        navigateFallbackAllowlist: [/^index.html$/]
       },
 
       manifest: {

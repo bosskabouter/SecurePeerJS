@@ -1,8 +1,10 @@
 import React, { useEffect, useState } from 'react'
-import { SecureCommunicationKey, SecurePusher, type PushServerConfig } from 'securepushjs'
+import { SecureCommunicationKey, SecurePusher, type PushServerConfig, registerSW } from 'securepushjs'
 
 import TEST_VAPID_KEYS from '../../secureP2pServer/vapidKeys.test.json'
 import TEST_VALUES from '../../example-config.json'
+
+registerSW()
 
 const serverConfig: PushServerConfig = {
   host: 'http://localhost:'.concat(TEST_VALUES.testConfig.server.port.toString()),
@@ -18,6 +20,7 @@ export default function WebPush (): JSX.Element {
   const [counter, setCounter] = useState(0)
   useEffect(() => {
     (async () => {
+      if (securePusher !== undefined) return
       const secureKey = await SecureCommunicationKey.create()
       setSecureKey(secureKey)
       setSecurePusher(await SecurePusher.register(secureKey, serverConfig))
